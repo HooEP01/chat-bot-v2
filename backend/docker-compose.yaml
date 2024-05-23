@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+ 
+  postgres:
+    image: postgres:latest
+    ports:
+      - 5432:5432 
+    restart: always
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - POSTGRES_DB=gorm
+      - POSTGRES_USER=gorm 
+      - POSTGRES_PASSWORD=gorm 
+      # - POSTGRES_INITDB_ARGS=-h localhost 
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080 
+    restart: always
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    links:
+        - postgres

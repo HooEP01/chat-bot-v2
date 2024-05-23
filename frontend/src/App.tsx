@@ -3,6 +3,7 @@ import "./App.css";
 import { connect, sendMsg } from "./api";
 import ChatHistory from "./components/ChatHistory";
 import Header from "./components/Header";
+import Faq from "./components/Faq";
 
 function App() {
   const [chatHistory, setChatHistory] = useState<string[]>([])
@@ -25,6 +26,7 @@ function App() {
   return (
     <>
       <div className="App">
+        <Faq/>
         <Header />
         <ChatHistory chatHistory={chatHistory} />
         <button onClick={send}>Hit</button>
