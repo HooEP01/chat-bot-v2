@@ -1,0 +1,2 @@
+Frontend - React
+Backend - Go
