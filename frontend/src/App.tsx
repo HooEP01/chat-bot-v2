@@ -1,37 +1,34 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
-import { connect, sendMsg } from "./api";
-import ChatHistory from "./components/ChatHistory";
-import Header from "./components/Header";
-import Faq from "./components/Faq";
+
+import Layout from "./layout/Layout";
+import Loading from "./components/Loading";
+
+const Dashboard = lazy(() => import("./pages/dashboard"));
+const Faq = lazy(() => import("./pages/faq"));
+
+const Error = lazy(() => import("./pages/404"));
 
 function App() {
-  const [chatHistory, setChatHistory] = useState<string[]>([])
-
-  // connect();
-
-  const send = () => {
-    console.log("hello");
-    sendMsg("hello");
-  };
-
-  useEffect(() => {
-    connect((msg: any) => {
-      console.log("New Message")
-      setChatHistory((prev) => [...prev, msg])
-      console.log(msg);
-    });
-  });
-
   return (
-    <>
-      <div className="App">
-        <Faq/>
-        <Header />
-        <ChatHistory chatHistory={chatHistory} />
-        <button onClick={send}>Hit</button>
-      </div>
-    </>
+    <main>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/faq" element={<Faq />} />
+          <Route path="/*" element={<Navigate to="/404" />} />
+        </Route>
+        <Route
+          path="/404"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Error />
+            </Suspense>
+          }
+        />
+      </Routes>
+    </main>
   );
 }
 
