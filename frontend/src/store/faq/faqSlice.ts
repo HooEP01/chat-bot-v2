@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
+import apiClient from "../../utils/http";
+import { Response, isSuccess } from "../../model/http.model";
 
 interface FaqState {
     updateState: boolean,
@@ -7,22 +9,16 @@ interface FaqState {
     items: FaqItem[],
     error: number,
 }
-
-interface Response {
-    code: number,
-    success: boolean,
-    message: string,
-}
-
 interface FaqResponse extends Response {
     data: FaqItem[]
 }
 
 interface FaqItem {
+    id: number,
+    parent_id?: number,
+    faq_type_id?: number,
     question: string,
     answer: string,
-    type: string,
-    upvotes: number
 }
 
 const initialState: FaqState = {
@@ -36,8 +32,9 @@ export const fetchFaq = createAsyncThunk(
     "faq/fetchFaq",
     async (_, thunkApi) => {
         try {
-            const response: FaqResponse = await axios.get("https://localhost:8080/api/faq");
-            if (response && response.success == true) {
+            const response: FaqResponse = await apiClient.get("/faq");
+            
+            if (isSuccess(response)) {
                 return thunkApi.fulfillWithValue(response.data);
             }
         } catch (error) {
