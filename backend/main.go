@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/HooEP01/chat-bot-v2/handle"
 	"github.com/HooEP01/chat-bot-v2/models"
 	"github.com/HooEP01/chat-bot-v2/pkg/websocket"
 	"github.com/go-chi/chi/v5"
@@ -36,9 +37,8 @@ func setupRoutes() {
 		serveWs(pool, w, r)
 	})
 
-	r.Get("/api/faq", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("haha")
-	})
+	r.Get("/api/faq", handle.HandleFaqList)
+	r.Post("/api/faq", handle.HandleFaqCreate)
 
 	http.ListenAndServe(":8080", r)
 }

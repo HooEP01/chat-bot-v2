@@ -7,12 +7,20 @@ import (
 	"gorm.io/gorm"
 )
 
+var db *gorm.DB
+
+func GetDB() *gorm.DB {
+	return db
+}
+
 func SetupDatabase() {
 	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable TimeZone=Asia/Kuala_Lumpur"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	postgresDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	err = db.AutoMigrate(&FaqType{}, &Faq{})
+	err = postgresDB.AutoMigrate(&FaqType{}, &Faq{})
 	if err != nil {
 		fmt.Println("failed to perform migrations: " + err.Error())
 	}
+
+	db = postgresDB
 }
