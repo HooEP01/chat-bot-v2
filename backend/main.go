@@ -8,6 +8,7 @@ import (
 	"github.com/HooEP01/chat-bot-v2/models"
 	"github.com/HooEP01/chat-bot-v2/pkg/websocket"
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/cors"
 )
 
 func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
@@ -29,6 +30,7 @@ func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 func setupRoutes() {
 
 	r := chi.NewRouter()
+	r.Use(cors.Default().Handler)
 
 	pool := websocket.NewPool()
 	go pool.Start()

@@ -22,7 +22,6 @@ func Make(h HTTPHandler) http.HandlerFunc {
 
 			// set status code
 			w.WriteHeader(response.StatusCode)
-			w.Header().Add("Access-Control-Allow-Origin", "*")
 
 			if err := json.NewEncoder(w).Encode(response); err != nil {
 				http.Error(w, fmt.Sprintf("Error encoding response: %v", err), http.StatusBadRequest)
