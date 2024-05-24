@@ -3,6 +3,7 @@ package handle
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/HooEP01/chat-bot-v2/models"
 	"github.com/HooEP01/chat-bot-v2/utils/custom"
@@ -11,7 +12,7 @@ import (
 
 func HandleFaqList(w http.ResponseWriter, r *http.Request) *custom.Response {
 	faqList := make([]models.Faq, 0)
-	models.GetDB().Joins("FaqType").Find(&faqList)
+	models.GetDB().Scopes(Paginate(r)).Joins("FaqType").Find(&faqList)
 
 	return custom.Success(faqList, "FAQ List sync successfully!")
 }
@@ -39,9 +40,15 @@ func HandleFaqCreate(w http.ResponseWriter, r *http.Request) *custom.Response {
 }
 
 func HandleFaqUpdate(w http.ResponseWriter, r *http.Request) *custom.Response {
-	// idParam := chi.URLParam(r, "id")
+	idParam := chi.URLParam(r, "id")
 
-	faq := models.Faq{}
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil {
+		return custom.Fail(err.Error(), http.StatusBadRequest)
+	}
+
+	faq := models.Faq{ID: uint(id)}
 	if err := json.NewDecoder(r.Body).Decode(&faq); err != nil {
 		return custom.Fail(err.Error(), http.StatusBadRequest)
 	}

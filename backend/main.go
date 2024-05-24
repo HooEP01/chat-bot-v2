@@ -38,7 +38,6 @@ func setupRoutes() {
 	})
 
 	r.Route("/faq", func(r chi.Router) {
-		// r.With(paginate).Get("/", handle.Make(handle.HandleFaqList))
 		r.Get("/", handle.Make(handle.HandleFaqList))
 		r.Post("/", handle.Make(handle.HandleFaqCreate))
 

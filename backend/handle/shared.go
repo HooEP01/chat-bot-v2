@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/HooEP01/chat-bot-v2/utils/custom"
+	"gorm.io/gorm"
 )
 
 type HTTPHandler func(w http.ResponseWriter, r *http.Request) *custom.Response
@@ -26,5 +28,29 @@ func Make(h HTTPHandler) http.HandlerFunc {
 			}
 
 		}
+	}
+}
+
+func Paginate(r *http.Request) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		q := r.URL.Query()
+
+		// page params
+		page, _ := strconv.Atoi(q.Get("page"))
+		if page <= 0 {
+			page = 1
+		}
+
+		// page_size params
+		pageSize, _ := strconv.Atoi(q.Get("page_size"))
+		switch {
+		case pageSize > 100:
+			pageSize = 100
+		case pageSize <= 0:
+			pageSize = 10
+		}
+
+		offset := (page - 1) * pageSize
+		return db.Offset(offset).Limit(pageSize)
 	}
 }
