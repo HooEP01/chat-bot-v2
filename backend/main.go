@@ -37,8 +37,18 @@ func setupRoutes() {
 		serveWs(pool, w, r)
 	})
 
-	r.Get("/api/faq", handle.HandleFaqList)
-	r.Post("/api/faq", handle.HandleFaqCreate)
+	r.Route("/faq", func(r chi.Router) {
+		// r.With(paginate).Get("/", handle.Make(handle.HandleFaqList))
+		r.Get("/", handle.Make(handle.HandleFaqList))
+		r.Post("/", handle.Make(handle.HandleFaqCreate))
+
+		// Subrouters:
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", handle.Make(handle.HandleFaqList))
+			r.Put("/", handle.Make(handle.HandleFaqUpdate))
+			r.Delete("/", handle.Make(handle.HandleFaqDelete))
+		})
+	})
 
 	http.ListenAndServe(":8080", r)
 }

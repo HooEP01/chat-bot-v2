@@ -2,45 +2,66 @@ package handle
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/HooEP01/chat-bot-v2/models"
+	"github.com/HooEP01/chat-bot-v2/utils/custom"
+	"github.com/go-chi/chi/v5"
 )
 
-func HandleFaqList(w http.ResponseWriter, r *http.Request) {
+func HandleFaqList(w http.ResponseWriter, r *http.Request) *custom.Response {
 	faqList := make([]models.Faq, 0)
 	models.GetDB().Joins("FaqType").Find(&faqList)
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(faqList); err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
+	return custom.Success(faqList, "FAQ List sync successfully!")
 }
 
-func HandleFaqCreate(w http.ResponseWriter, r *http.Request) {
-	var newFaq models.Faq
+func HandleFaqItem(w http.ResponseWriter, r *http.Request) *custom.Response {
+	idParam := chi.URLParam(r, "id")
+	faqItem := models.Faq{}
+	models.GetDB().Joins("FaqType").First(faqItem, idParam)
 
+	return custom.Success(faqItem, "FAQ Item sync successfully!")
+}
+
+func HandleFaqCreate(w http.ResponseWriter, r *http.Request) *custom.Response {
+	var newFaq models.Faq
 	if err := json.NewDecoder(r.Body).Decode(&newFaq); err != nil {
-		fmt.Fprintf(w, "Error decoding request body: %v", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return custom.Fail(err.Error(), http.StatusBadRequest)
 	}
 
 	result := models.GetDB().Create(&newFaq)
-
 	if result.Error != nil {
-		fmt.Println("Error: ", result.Error)
-		http.Error(w, result.Error.Error(), http.StatusBadRequest)
-		return
+		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	return custom.Success(newFaq, "FAQ created successfully!")
+}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(newFaq); err != nil {
-		fmt.Fprintf(w, "Error encoding response: %v", err)
-		return
+func HandleFaqUpdate(w http.ResponseWriter, r *http.Request) *custom.Response {
+	// idParam := chi.URLParam(r, "id")
+
+	faq := models.Faq{}
+	if err := json.NewDecoder(r.Body).Decode(&faq); err != nil {
+		return custom.Fail(err.Error(), http.StatusBadRequest)
 	}
+
+	result := models.GetDB().Save(faq)
+	if result.Error != nil {
+		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
+	}
+
+	return custom.Success(faq, "FAQ updated successfully!")
+}
+
+func HandleFaqDelete(w http.ResponseWriter, r *http.Request) *custom.Response {
+	idParam := chi.URLParam(r, "id")
+
+	// TODO: soft delete
+	result := models.GetDB().Delete(models.Faq{}, idParam)
+	if result.Error != nil {
+		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
+	}
+
+	return custom.Success(idParam, "FAQ deleted successfully!")
 }
