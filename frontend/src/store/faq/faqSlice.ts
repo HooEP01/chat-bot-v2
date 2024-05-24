@@ -1,0 +1,65 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { AxiosError, AxiosResponse } from "axios";
+import apiClient from "../../utils/http";
+import { Response, isSuccess } from "../../model/http.model";
+import { FaqItem } from "../../model/faq.model";
+
+interface FaqState {
+    updateState: boolean,
+    loading: boolean,
+    items: FaqItem[],
+    error: number,
+}
+interface FaqResponse extends Response {
+    data: FaqItem[]
+}
+
+const initialState: FaqState = {
+    updateState: false,
+    loading: false,
+    items: [],
+    error: 0
+}
+
+export const fetchFaq = createAsyncThunk(
+    "faq/fetchFaq",
+    async (_, thunkApi) => {
+        try {
+            const response: AxiosResponse<FaqResponse> = await apiClient.get("/faq");
+
+            if (isSuccess(response.data)) {
+                // TODO: need improve
+                return thunkApi.fulfillWithValue(response.data.data);
+            }
+        } catch (error) {
+            const err = error as AxiosError
+            return thunkApi.rejectWithValue(err.response?.status);
+        }
+    }
+)
+
+const faqSlice = createSlice({
+    name: "faq",
+    initialState,
+    reducers: {
+        changeStateTrue: (state) => {
+            state.updateState = true;
+        },
+        changeStateFalse: (state) => {
+            state.updateState = false;
+        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchFaq.fulfilled, (state, action) => {
+                state.items = [...action.payload as FaqItem[]];
+            })
+            .addCase(fetchFaq.rejected, (state, action) => {
+                state.error = action.payload as number
+            });
+    }
+});
+
+// export const { } = faqSlice.actions;
+
+export default faqSlice.reducer;

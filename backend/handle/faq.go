@@ -1,0 +1,74 @@
+package handle
+
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+
+	"github.com/HooEP01/chat-bot-v2/models"
+	"github.com/HooEP01/chat-bot-v2/utils/custom"
+	"github.com/go-chi/chi/v5"
+)
+
+func HandleFaqList(w http.ResponseWriter, r *http.Request) *custom.Response {
+	faqList := make([]models.Faq, 0)
+	models.GetDB().Scopes(Paginate(r)).Joins("FaqType").Find(&faqList)
+
+	return custom.Success(faqList, "FAQ List sync successfully!")
+}
+
+func HandleFaqItem(w http.ResponseWriter, r *http.Request) *custom.Response {
+	idParam := chi.URLParam(r, "id")
+	faqItem := models.Faq{}
+	models.GetDB().Joins("FaqType").First(faqItem, idParam)
+
+	return custom.Success(faqItem, "FAQ Item sync successfully!")
+}
+
+func HandleFaqCreate(w http.ResponseWriter, r *http.Request) *custom.Response {
+	var newFaq models.Faq
+	if err := json.NewDecoder(r.Body).Decode(&newFaq); err != nil {
+		return custom.Fail(err.Error(), http.StatusBadRequest)
+	}
+
+	result := models.GetDB().Create(&newFaq)
+	if result.Error != nil {
+		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
+	}
+
+	return custom.Success(newFaq, "FAQ created successfully!")
+}
+
+func HandleFaqUpdate(w http.ResponseWriter, r *http.Request) *custom.Response {
+	idParam := chi.URLParam(r, "id")
+
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil {
+		return custom.Fail(err.Error(), http.StatusBadRequest)
+	}
+
+	faq := models.Faq{ID: uint(id)}
+	if err := json.NewDecoder(r.Body).Decode(&faq); err != nil {
+		return custom.Fail(err.Error(), http.StatusBadRequest)
+	}
+
+	result := models.GetDB().Save(faq)
+	if result.Error != nil {
+		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
+	}
+
+	return custom.Success(faq, "FAQ updated successfully!")
+}
+
+func HandleFaqDelete(w http.ResponseWriter, r *http.Request) *custom.Response {
+	idParam := chi.URLParam(r, "id")
+
+	// TODO: soft delete
+	result := models.GetDB().Delete(models.Faq{}, idParam)
+	if result.Error != nil {
+		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
+	}
+
+	return custom.Success(idParam, "FAQ deleted successfully!")
+}
