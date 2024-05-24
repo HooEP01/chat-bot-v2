@@ -33,18 +33,31 @@ func setupRoutes() {
 	pool := websocket.NewPool()
 	go pool.Start()
 
+	// chat api
 	r.Get("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(pool, w, r)
 	})
 
+	// faq api
 	r.Route("/faq", func(r chi.Router) {
 		r.Get("/", handle.Make(handle.HandleFaqList))
 		r.Post("/", handle.Make(handle.HandleFaqCreate))
 
 		// Subrouters:
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", handle.Make(handle.HandleFaqList))
+			r.Get("/", handle.Make(handle.HandleFaqItem))
 			r.Put("/", handle.Make(handle.HandleFaqUpdate))
+			r.Delete("/", handle.Make(handle.HandleFaqDelete))
+		})
+	})
+
+	// faq type api
+	r.Route("/faq-type", func(r chi.Router) {
+		r.Get("/", handle.Make(handle.HandleFaqList))
+		r.Post("/", handle.Make(handle.HandleFaqCreate))
+
+		// Subrouters:
+		r.Route("/{id}", func(r chi.Router) {
 			r.Delete("/", handle.Make(handle.HandleFaqDelete))
 		})
 	})
@@ -53,7 +66,7 @@ func setupRoutes() {
 }
 
 func main() {
-	fmt.Println("Chat Bot APp v0.01")
+	fmt.Println("Chat Bot App v0.01")
 
 	// set up database
 	models.SetupDatabase()
