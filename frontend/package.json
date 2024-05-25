@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.5.0",
     "axios": "^1.7.2",
     "framer-motion": "^11.2.6",
+    "lodash": "^4.17.21",
     "node-sass": "^9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "@reduxjs/toolkit": "^2.2.5",
+    "@types/lodash": "^4.17.4",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
