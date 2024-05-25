@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import Loading from "../components/Loading";
 import { motion } from "framer-motion";
+import CustomToast from "../components/CustomToast";
 
 const Layout = () => {
   const location = useLocation();
@@ -9,13 +10,14 @@ const Layout = () => {
 
   return (
     <>
+      <CustomToast />
+
       <div className="flex flex-row">
         {/* always open */}
         <div className="drawer drawer-open">
           <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
           <div className="drawer-content bg-base-100">
-
             {/* Header */}
             <div className="navbar bg-base-200 w-full border">
               {/* <!-- Logo --> */}
