@@ -4,7 +4,10 @@ import { fetchFaq } from "../store/faq/faqSlice";
 import { useEffect } from "react";
 import { FaqItem } from "../model/faq.model";
 import CustomIcon from "../components/CustomIcon";
-import { IconEdit, IconPlus } from "@tabler/icons-react";
+import { IconEdit } from "@tabler/icons-react";
+import FaqModel from "../components/FaqModel";
+import { FormType } from "../constant";
+import { fetchFaqType } from "../store/faqType/faqTypeSlice";
 
 const Faq = () => {
   const items = useSelector((state: RootState) => state.faq.items) as FaqItem[];
@@ -12,6 +15,7 @@ const Faq = () => {
 
   useEffect(() => {
     dispatch(fetchFaq());
+    dispatch(fetchFaqType());
   }, [dispatch]);
 
   return (
@@ -32,9 +36,7 @@ const Faq = () => {
             {/* Add Button */}
             <div className="flex justify-between items-center">
               <h2 className="card-title">FAQ</h2>
-              <button className="btn btn-secondary">
-                <CustomIcon button={IconPlus} />
-              </button>
+              <FaqModel type={FormType.Create} />
             </div>
             {/* Table */}
             <div className="overflow-x-auto">
