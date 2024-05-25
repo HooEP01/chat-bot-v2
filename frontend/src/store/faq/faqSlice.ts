@@ -2,23 +2,23 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AxiosError, AxiosResponse } from "axios";
 import apiClient from "../../utils/http";
 import { Response, isSuccess } from "../../model/http.model";
-import { FaqItem } from "../../model/faq.model";
+import { FaqForm, FaqItem } from "../../model/faq.model";
+import { State, StateStatus } from "../../model/state.model";
+import { findIndexById } from "../../utils";
+import _ from "lodash";
 
-interface FaqState {
-    updateState: boolean,
-    loading: boolean,
+interface FaqState extends State {
     items: FaqItem[],
-    error: number,
 }
+
 interface FaqResponse extends Response {
     data: FaqItem[]
 }
 
 const initialState: FaqState = {
-    updateState: false,
-    loading: false,
+    status: StateStatus.Idle,
     items: [],
-    error: 0
+    error: ""
 }
 
 export const fetchFaq = createAsyncThunk(
@@ -38,24 +38,111 @@ export const fetchFaq = createAsyncThunk(
     }
 )
 
+export const createFaq = createAsyncThunk(
+    "faq/createFaq",
+    async (newFaq: FaqForm, thunkApi) => {
+        try {
+            const response = await apiClient.post("/faq", newFaq)
+
+            if (isSuccess(response.data)) {
+                return thunkApi.fulfillWithValue(response.data.data);
+            }
+        } catch (error) {
+            const err = error as AxiosError
+            return thunkApi.rejectWithValue(err.response?.status);
+        }
+    }
+)
+
+export const updateFaq = createAsyncThunk(
+    "faq/updateFaq",
+    async (editFaq: FaqForm, thunkApi) => {
+        try {
+            const response = await apiClient.put(`/faq/${editFaq.id}`, editFaq)
+
+            if (isSuccess(response.data)) {
+                return thunkApi.fulfillWithValue(response.data.data);
+            }
+        } catch (error) {
+            const err = error as AxiosError
+            return thunkApi.rejectWithValue(err.response?.status);
+        }
+    }
+)
+
+export const deleteFaq = createAsyncThunk(
+    "faq/deleteFaq",
+    async (id: number, thunkApi) => {
+        try {
+            const response = await apiClient.delete(`/faq/${id}`);
+            if (isSuccess(response.data)) {
+                return thunkApi.fulfillWithValue(response.data.data);
+            }
+        } catch (error) {
+            const err = error as AxiosError
+            return thunkApi.rejectWithValue(err.response?.status);
+        }
+    }
+)
+
+
 const faqSlice = createSlice({
     name: "faq",
     initialState,
-    reducers: {
-        changeStateTrue: (state) => {
-            state.updateState = true;
-        },
-        changeStateFalse: (state) => {
-            state.updateState = false;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(fetchFaq.pending, (state) => {
+                state.status = StateStatus.Loading;
+            })
             .addCase(fetchFaq.fulfilled, (state, action) => {
+                state.status = StateStatus.Succeeded;
                 state.items = [...action.payload as FaqItem[]];
             })
             .addCase(fetchFaq.rejected, (state, action) => {
-                state.error = action.payload as number
+                state.status = StateStatus.Failed;
+                state.error = action.error.message;
+            })
+            .addCase(createFaq.pending, (state) => {
+                state.status = StateStatus.Loading;
+            })
+            .addCase(createFaq.fulfilled, (state, action) => {
+                state.status = StateStatus.Succeeded;
+                state.items = [...state.items, action.payload];
+            })
+            .addCase(createFaq.rejected, (state, action) => {
+                state.status = StateStatus.Failed;
+                state.error = action.error.message;
+            })
+            .addCase(updateFaq.pending, (state) => {
+                state.status = StateStatus.Loading;
+            })
+            .addCase(updateFaq.fulfilled, (state, action) => {
+                state.status = StateStatus.Succeeded;
+
+                const faqIndex = findIndexById(state.items, action.payload.id);
+                if (faqIndex !== -1) {
+                    state.items[faqIndex] = action.payload;
+                }
+            })
+            .addCase(updateFaq.rejected, (state, action) => {
+                state.status = StateStatus.Failed;
+                state.error = action.error.message;
+            })
+            .addCase(deleteFaq.pending, (state) => {
+                state.status = StateStatus.Loading;
+            })
+            .addCase(deleteFaq.fulfilled, (state, action) => {
+                state.status = StateStatus.Succeeded;
+
+                const faqIndex = findIndexById(state.items, _.toNumber(action.payload));
+                if (faqIndex !== -1) {   
+                    state.items.splice(faqIndex, 1);
+                }
+            })
+            .addCase(deleteFaq.rejected, (state, action) => {
+                state.status = StateStatus.Failed;
+                state.error = action.error.message;
             });
     }
 });

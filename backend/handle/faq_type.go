@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func HandleFaqTyleList(w http.ResponseWriter, r *http.Request) *custom.Response {
+func HandleFaqTypeList(w http.ResponseWriter, r *http.Request) *custom.Response {
 	faqTypeList := make([]models.FaqType, 0)
 	models.GetDB().Scopes(Paginate(r)).Find(&faqTypeList)
 
@@ -34,7 +34,7 @@ func HandleFaqTypeDelete(w http.ResponseWriter, r *http.Request) *custom.Respons
 	idParam := chi.URLParam(r, "id")
 
 	// TODO: soft delete
-	result := models.GetDB().Delete(models.FaqType{}, idParam)
+	result := models.GetDB().Delete(&models.FaqType{}, idParam)
 	if result.Error != nil {
 		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}
