@@ -8,6 +8,7 @@ import (
 	"github.com/HooEP01/chat-bot-v2/models"
 	"github.com/HooEP01/chat-bot-v2/pkg/websocket"
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
 
@@ -76,6 +77,12 @@ func setupRoutes() {
 
 func main() {
 	fmt.Println("Chat Bot App v0.0.2")
+
+	// set up env
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("Failed to get env file.")
+	}
 
 	// set up database
 	models.SetupDatabase()
