@@ -23,7 +23,7 @@ export const fetchFaqType = createAsyncThunk(
     "faq/fetchFaqType",
     async (_, thunkApi) => {
         try {
-            const response: AxiosResponse<FaqTypeResponse> = await apiClient.get("/faq");
+            const response: AxiosResponse<FaqTypeResponse> = await apiClient.get("/faq-type");
 
             if (isSuccess(response.data)) {
                 // TODO: need improve

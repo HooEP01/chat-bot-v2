@@ -20,7 +20,7 @@ const Layout = () => {
             <div className="navbar bg-base-200 w-full border">
               {/* <!-- Logo --> */}
               <div className="flex-1">
-                <button className="btn btn-ghost text-xl">Company Name</button>
+                <button className="btn btn-ghost text-xl">Chat Bot</button>
               </div>
 
               <div className="flex-none mr-4"></div>

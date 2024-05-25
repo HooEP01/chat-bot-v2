@@ -4,6 +4,8 @@ import apiClient from "../../utils/http";
 import { Response, isSuccess } from "../../model/http.model";
 import { FaqForm, FaqItem } from "../../model/faq.model";
 import { State, StateStatus } from "../../model/state.model";
+import { findIndexById } from "../../utils";
+import _ from "lodash";
 
 interface FaqState extends State {
     items: FaqItem[],
@@ -56,7 +58,7 @@ export const updateFaq = createAsyncThunk(
     "faq/updateFaq",
     async (editFaq: FaqForm, thunkApi) => {
         try {
-            const response = await apiClient.post(`/faq/${editFaq.id}`, editFaq)
+            const response = await apiClient.put(`/faq/${editFaq.id}`, editFaq)
 
             if (isSuccess(response.data)) {
                 return thunkApi.fulfillWithValue(response.data.data);
@@ -70,7 +72,7 @@ export const updateFaq = createAsyncThunk(
 
 export const deleteFaq = createAsyncThunk(
     "faq/deleteFaq",
-    async (id, thunkApi) => {
+    async (id: number, thunkApi) => {
         try {
             const response = await apiClient.delete(`/faq/${id}`);
             if (isSuccess(response.data)) {
@@ -106,7 +108,7 @@ const faqSlice = createSlice({
             })
             .addCase(createFaq.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
-                state.items = [...state.items, ...action.payload];
+                state.items = [...state.items, action.payload];
             })
             .addCase(createFaq.rejected, (state, action) => {
                 state.status = StateStatus.Failed;
@@ -117,7 +119,11 @@ const faqSlice = createSlice({
             })
             .addCase(updateFaq.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
-                state.items = [...state.items, ...action.payload];
+
+                const faqIndex = findIndexById(state.items, action.payload.id);
+                if (faqIndex !== -1) {
+                    state.items[faqIndex] = action.payload;
+                }
             })
             .addCase(updateFaq.rejected, (state, action) => {
                 state.status = StateStatus.Failed;
@@ -128,7 +134,11 @@ const faqSlice = createSlice({
             })
             .addCase(deleteFaq.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
-                state.items = [...state.items, ...action.payload];
+
+                const faqIndex = findIndexById(state.items, _.toNumber(action.payload));
+                if (faqIndex !== -1) {   
+                    state.items.splice(faqIndex, 1);
+                }
             })
             .addCase(deleteFaq.rejected, (state, action) => {
                 state.status = StateStatus.Failed;
