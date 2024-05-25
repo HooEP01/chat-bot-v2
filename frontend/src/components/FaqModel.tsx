@@ -5,6 +5,10 @@ import { FaqItem } from "../model/faq.model";
 import _ from "lodash";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
+import { FaqTypeItem } from "../model/faqType.model";
+import { createFaq, updateFaq } from "../store/faq/faqSlice";
 
 interface FaqModelProps {
   type: FormType;
@@ -12,18 +16,55 @@ interface FaqModelProps {
 }
 
 type FaqFormValues = {
-  type: number;
+  id?: number;
+  top_id: number;
+  parent_id: number;
+  faq_type_id: number;
   answer: string;
   question: string;
 };
 
 const FaqModel = (props: FaqModelProps) => {
-  const { type } = props;
+  const { type, faqItem } = props;
 
-  const { register, handleSubmit } = useForm<FaqFormValues>();
+  const dispatch: AppDispatch = useDispatch();
+
+  const faqTypeItems = useSelector(
+    (state: RootState) => state.faqType.items
+  ) as FaqTypeItem[];
+
+  const faqTypeId = _.get(faqItem, ["faq_type_id"], 0);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FaqFormValues>({
+    defaultValues: {
+      top_id: _.get(faqItem, ["top_id"], 0),
+      parent_id: _.get(faqItem, ["parent_id"], 0),
+      faq_type_id: faqTypeId,
+      answer: _.get(faqItem, ["answer"], ""),
+      question: _.get(faqItem, ["question"], ""),
+    },
+  });
 
   const onSubmit: SubmitHandler<FaqFormValues> = (data) => {
     console.log(data);
+
+    if (type == FormType.Create) {
+      dispatch(createFaq(data));
+    } else {
+      data.id = _.get(faqItem, ["id"], 0);
+      dispatch(updateFaq(data));
+    }
+
+    // reset form to default
+    reset();
+
+    // close modal
+    toggleModal();
   };
 
   const [showModal, setShowModel] = useState(false);
@@ -35,11 +76,16 @@ const FaqModel = (props: FaqModelProps) => {
 
   return (
     <>
-      <button className="btn btn-info" onClick={toggleModal}>
+      <button
+        className={`btn ${
+          type == FormType.Create ? "btn-primary" : "btn-accent"
+        }`}
+        onClick={toggleModal}
+      >
         {type == FormType.Create ? (
-          <CustomIcon button={IconPlus} v-if="props.type === FormType.Create" />
+          <CustomIcon button={IconPlus} stroke="2" />
         ) : (
-          <CustomIcon button={IconEdit} v-if="props.type === FormType.Edit" />
+          <CustomIcon button={IconEdit} />
         )}
       </button>
 
@@ -58,17 +104,30 @@ const FaqModel = (props: FaqModelProps) => {
                   Faq Type
                 </label>
                 <select
-                  {...register("type")}
+                  {...register("faq_type_id", {
+                    required: true,
+                    min: 1,
+                    valueAsNumber: true,
+                  })}
                   disabled={type === FormType.Edit}
                   className="select select-bordered w-full"
+                  defaultValue={faqTypeId}
                   required
                 >
-                  <option value="1">Blue</option>
-                  <option value="2">Red</option>
-                  {/* <option v-for="option in Object.keys(CameraType)" :key="option" :value="option">
-                                {{ option }}
-                            </option> */}
+                  <option key={"select one"} value={0} disabled={true}>
+                    Select One
+                  </option>
+                  {faqTypeItems.map((item, index) => {
+                    return (
+                      <option key={index} value={item.id}>
+                        {item.name}
+                      </option>
+                    );
+                  })}
                 </select>
+                {errors.faq_type_id && (
+                  <p className="text-error">Please select one type</p>
+                )}
               </div>
 
               {/* question field */}
@@ -76,14 +135,19 @@ const FaqModel = (props: FaqModelProps) => {
                 <label htmlFor="question" className="text-sm font-medium">
                   Question
                 </label>
-                <label className="input input-bordered flex items-center gap-2">
+                <textarea
+                  className="textarea textarea-bordered w-full"
+                  {...register("question", { required: true })}
+                  placeholder="Question"
+                  rows={1}
+                ></textarea>
+                {/* <label className="input input-bordered flex items-center gap-2">
                   <input
-                    {...register("question")}
+                    {...register("question", { required: true })}
                     type="text"
                     className="grow"
-                    required
                   />
-                </label>
+                </label> */}
               </div>
 
               {/* <!-- answer field --> */}
@@ -91,14 +155,12 @@ const FaqModel = (props: FaqModelProps) => {
                 <label htmlFor="answer" className="text-sm font-medium">
                   Answer
                 </label>
-                <label className="input input-bordered flex items-center gap-2">
-                  <input
-                    {...register("answer")}
-                    type="text"
-                    className="grow"
-                    required
-                  />
-                </label>
+                <textarea
+                  className="textarea textarea-bordered w-full"
+                  {...register("answer", { required: true })}
+                  placeholder="Answer"
+                  rows={1}
+                ></textarea>
               </div>
 
               <div className="flex justify-between">
