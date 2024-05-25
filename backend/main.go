@@ -30,14 +30,21 @@ func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 func setupRoutes() {
 
 	r := chi.NewRouter()
-	r.Use(cors.Default().Handler)
+
+	// cors for local
+	r.Use(cors.AllowAll().Handler)
 
 	pool := websocket.NewPool()
 	go pool.Start()
 
-	// chat api
+	// ws
 	r.Get("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(pool, w, r)
+	})
+
+	// chat api
+	r.Route("/chat", func(r chi.Router) {
+		r.Post("/", handle.Make(handle.HandleChatCreate))
 	})
 
 	// faq api
@@ -55,12 +62,12 @@ func setupRoutes() {
 
 	// faq type api
 	r.Route("/faq-type", func(r chi.Router) {
-		r.Get("/", handle.Make(handle.HandleFaqList))
-		r.Post("/", handle.Make(handle.HandleFaqCreate))
+		r.Get("/", handle.Make(handle.HandleFaqTypeList))
+		r.Post("/", handle.Make(handle.HandleFaqTypeCreate))
 
 		// Subrouters:
 		r.Route("/{id}", func(r chi.Router) {
-			r.Delete("/", handle.Make(handle.HandleFaqDelete))
+			r.Delete("/", handle.Make(handle.HandleFaqTypeDelete))
 		})
 	})
 
@@ -68,7 +75,7 @@ func setupRoutes() {
 }
 
 func main() {
-	fmt.Println("Chat Bot App v0.01")
+	fmt.Println("Chat Bot App v0.0.2")
 
 	// set up database
 	models.SetupDatabase()

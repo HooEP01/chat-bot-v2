@@ -65,7 +65,7 @@ func HandleFaqDelete(w http.ResponseWriter, r *http.Request) *custom.Response {
 	idParam := chi.URLParam(r, "id")
 
 	// TODO: soft delete
-	result := models.GetDB().Delete(models.Faq{}, idParam)
+	result := models.GetDB().Delete(&models.Faq{}, idParam)
 	if result.Error != nil {
 		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}
