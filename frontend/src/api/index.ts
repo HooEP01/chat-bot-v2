@@ -1,15 +1,19 @@
 const socket = new WebSocket("ws://localhost:8080/ws");
 
-const connect = (cb: any) => {
+interface Channel {
+    (m: MessageEvent): void
+}
+
+const connect = (channel:  Channel) => {
     console.log("Attempting Connection...");
 
     socket.onopen = () => {
         console.log("Successfully Connected");
     };
 
-    socket.onmessage = msg => {
-        console.log(msg);
-        cb(msg)
+    socket.onmessage = message => {
+        console.log(message);
+        channel(message)
     };
 
     socket.onclose = event => {
@@ -22,7 +26,6 @@ const connect = (cb: any) => {
 };
 
 const sendMsg = (msg: string | ArrayBufferLike | Blob | ArrayBufferView) => {
-    console.log("sending msg: ", msg);
     socket.send(msg);
 };
 

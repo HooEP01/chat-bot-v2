@@ -89,6 +89,14 @@ const Layout = () => {
                     Faq
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="/chat"
+                    className={currentPath === "/chat" ? "active" : ""}
+                  >
+                    Chat
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

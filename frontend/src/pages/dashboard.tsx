@@ -1,4 +1,4 @@
-const dashboard = () => {
+const Dashboard = () => {
   return (
     <>
       <p>Dashboard</p>
@@ -6,4 +6,4 @@ const dashboard = () => {
   );
 };
 
-export default dashboard;
+export default Dashboard;
