@@ -5,3 +5,12 @@ export interface FaqItem {
     question: string,
     answer: string,
 }
+
+
+export interface FaqForm {
+    id?: number,
+    answer: string,
+    question: string,
+    top_id?: number,
+    parent_id?: number,
+}
