@@ -7,5 +7,5 @@ export interface FaqTypeItem {
 export interface FaqTypeForm {
     id?: number,
     name: string,
-    description: string,
+    description?: string,
 }
