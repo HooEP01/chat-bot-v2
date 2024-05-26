@@ -93,7 +93,6 @@ export const deleteFaq = createAsyncThunk(
     }
 )
 
-
 const faqSlice = createSlice({
     name: "faq",
     initialState,
