@@ -6,6 +6,8 @@ import apiClient from "../../utils/http";
 import { Response, isSuccess } from "../../model/http.model";
 import { RootState } from "..";
 import _ from "lodash";
+import { CustomToastNotify } from "../../components/CustomToast";
+import { findIndexById } from "../../utils";
 
 interface FaqTypeState extends State {
     items: FaqTypeItem[],
@@ -83,6 +85,23 @@ export const batchCreateFaqTypes = createAsyncThunk(
     }
 )
 
+export const deleteFaqType = createAsyncThunk(
+    "faq/deleteFaqType",
+    async (id: number, thunkApi) => {
+        try {
+            const response = await apiClient.delete(`/faq-type/${id}`);
+            const { data, success, message } = response.data;
+
+            if (isSuccess(response.data)) {
+                CustomToastNotify(success, message);
+                return thunkApi.fulfillWithValue(data);
+            }
+        } catch (error) {
+            const err = error as AxiosError
+            return thunkApi.rejectWithValue(err.response?.status);
+        }
+    }
+)
 
 const faqSlice = createSlice({
     name: "faq",
@@ -123,6 +142,21 @@ const faqSlice = createSlice({
                 state.status = StateStatus.Failed;
                 state.error = action.error.message;
             })
+            .addCase(deleteFaqType.pending, (state) => {
+                state.status = StateStatus.Loading;
+            })
+            .addCase(deleteFaqType.fulfilled, (state, action) => {
+                state.status = StateStatus.Succeeded;
+
+                const faqIndex = findIndexById(state.items, _.toNumber(action.payload));
+                if (faqIndex !== -1) {   
+                    state.items.splice(faqIndex, 1);
+                }
+            })
+            .addCase(deleteFaqType.rejected, (state, action) => {
+                state.status = StateStatus.Failed;
+                state.error = action.error.message;
+            });
     }
 });
 
