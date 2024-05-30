@@ -9,6 +9,7 @@ import { fetchFaqType } from "../store/faqType/faqTypeSlice";
 import { IconTag, IconTrash } from "@tabler/icons-react";
 import CustomIcon from "../components/CustomIcon";
 import { FaqTypeItem } from "../model/faqType.model";
+import FaqTypeModel from "../components/FaqTypeModel";
 
 const Faq = () => {
   const items = useSelector((state: RootState) => state.faq.items) as FaqItem[];
@@ -33,21 +34,25 @@ const Faq = () => {
           <div className="card-body">
             <h2 className="card-title">Type</h2>
 
-            <div className="my-4">
-              {faqTypeItems.map((items, index) => {
-                return (
-                  <div key={index} className="flex justify-start items-center">
-                    <button className="btn btn-outline w-full">
-                      <CustomIcon button={IconTag} />
-                      <p className="text-start pl-4">{items.name ?? "-"}</p>
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+            <div className="card-actions block">
+              <div className="flex flex-col gap-3 my-4">
+                {faqTypeItems.map((items, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="flex justify-start items-center"
+                    >
+                      <button className="btn btn-outline w-full">
+                        <CustomIcon button={IconTag} />
+                        <p className="text-start pl-4">{items.name ?? "-"}</p>
+                      </button>
+                    </div>
+                  );
+                })}
 
-            <div className="card-actions">
-              <button className="btn btn-primary w-full">Edit Type</button>
+                {/* Faq type edit model */}
+                <FaqTypeModel />
+              </div>
             </div>
           </div>
         </div>
