@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { FaqTypeItem } from "../model/faqType.model";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { createFaqType } from "../store/faqType/faqTypeSlice";
+import { createFaqType, deleteFaqType } from "../store/faqType/faqTypeSlice";
 import { useState } from "react";
 import CustomIcon from "./CustomIcon";
 import { IconEdit, IconTag, IconTrash } from "@tabler/icons-react";
@@ -42,7 +42,7 @@ const FaqTypeModel = () => {
       const exist = _.some(faqTypeItems, { id: parseInt(selectedButton) });
 
       if (exist) {
-        // dispatch(deleteFaq(parseInt(selectedButton)));
+        dispatch(deleteFaqType(parseInt(selectedButton)));
       }
       return;
     }
@@ -98,6 +98,7 @@ const FaqTypeModel = () => {
                     {...register("name", { required: true })}
                     type="text"
                     className="grow"
+                    autoFocus={false}
                   />
                 </label>
               </div>
@@ -124,6 +125,7 @@ const FaqTypeModel = () => {
                       className="flex justify-start items-center"
                     >
                       <button
+                        type="button"
                         key={item.id}
                         onClick={(e: React.MouseEvent<HTMLElement>) =>
                           setSelectedButton(e)
@@ -144,7 +146,7 @@ const FaqTypeModel = () => {
 
               <div className="flex justify-between">
                 {selectedButton != null ? (
-                  <button onClick={onDelete} className="btn btn-error">
+                  <button onClick={onDelete} type="button" className="btn btn-error">
                     Delete
                   </button>
                 ) : (
