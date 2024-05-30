@@ -6,6 +6,7 @@ import { FaqForm, FaqItem } from "../../model/faq.model";
 import { State, StateStatus } from "../../model/state.model";
 import { findIndexById } from "../../utils";
 import _ from "lodash";
+import { CustomToastNotify } from "../../components/CustomToast";
 
 interface FaqState extends State {
     items: FaqItem[],
@@ -43,9 +44,11 @@ export const createFaq = createAsyncThunk(
     async (newFaq: FaqForm, thunkApi) => {
         try {
             const response = await apiClient.post("/faq", newFaq)
+            const { data, success, message } = response.data;
 
             if (isSuccess(response.data)) {
-                return thunkApi.fulfillWithValue(response.data.data);
+                CustomToastNotify(success, message);
+                return thunkApi.fulfillWithValue(data);
             }
         } catch (error) {
             const err = error as AxiosError
@@ -59,9 +62,11 @@ export const updateFaq = createAsyncThunk(
     async (editFaq: FaqForm, thunkApi) => {
         try {
             const response = await apiClient.put(`/faq/${editFaq.id}`, editFaq)
+            const { data, success, message } = response.data;
 
             if (isSuccess(response.data)) {
-                return thunkApi.fulfillWithValue(response.data.data);
+                CustomToastNotify(success, message);
+                return thunkApi.fulfillWithValue(data);
             }
         } catch (error) {
             const err = error as AxiosError
@@ -75,8 +80,11 @@ export const deleteFaq = createAsyncThunk(
     async (id: number, thunkApi) => {
         try {
             const response = await apiClient.delete(`/faq/${id}`);
+            const { data, success, message } = response.data;
+
             if (isSuccess(response.data)) {
-                return thunkApi.fulfillWithValue(response.data.data);
+                CustomToastNotify(success, message);
+                return thunkApi.fulfillWithValue(data);
             }
         } catch (error) {
             const err = error as AxiosError
@@ -84,7 +92,6 @@ export const deleteFaq = createAsyncThunk(
         }
     }
 )
-
 
 const faqSlice = createSlice({
     name: "faq",

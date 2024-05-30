@@ -1,9 +1,12 @@
-const dashboard = () => {
+import CustomToast from "../components/CustomToast";
+
+const Dashboard = () => {
   return (
     <>
       <p>Dashboard</p>
+      <CustomToast/>
     </>
   );
 };
 
-export default dashboard;
+export default Dashboard;
