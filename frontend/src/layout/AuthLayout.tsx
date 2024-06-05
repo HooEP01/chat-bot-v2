@@ -8,8 +8,8 @@ const AuthLayout = () => {
   return (
     <>
       <CustomToast />
-      <div className="hero min-h-screen bg-base-200">
-        <div className="hero-content text-center">
+      <div className="w-full h-screen bg-base-200 bg-cover bg-center bg-no-repeat bg-fixed">
+        <div className="flex items-center justify-center h-full">
           <Suspense fallback={<Loading />}>
             <motion.div
               key={location.pathname}
