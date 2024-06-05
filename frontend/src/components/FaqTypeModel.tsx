@@ -74,7 +74,7 @@ const FaqTypeModel = () => {
         className="btn btn-primary w-full justify-start"
         onClick={toggleModal}
       >
-        <CustomIcon button={IconEdit} />
+        <CustomIcon icon={IconEdit} />
         <p className="text-start pl-4">Edit Faq Type</p>
       </button>
 
@@ -135,9 +135,9 @@ const FaqTypeModel = () => {
                           selectedButton == String(item.id) ? "btn-active" : ""
                         }`}
                       >
-                        <CustomIcon button={IconTag} />
+                        <CustomIcon icon={IconTag} />
                         <p className="text-start pl-4">{item.name ?? "-"}</p>
-                        <CustomIcon button={IconTrash} />
+                        <CustomIcon icon={IconTrash} />
                       </button>
                     </div>
                   );
