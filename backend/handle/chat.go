@@ -14,5 +14,6 @@ func HandleChatCreate(w http.ResponseWriter, r *http.Request) *custom.Response {
 		return custom.Fail(err.Error(), http.StatusBadRequest)
 	}
 
-	return newChat.AutoResponse()
+	// return newChat.AutoResponse()
+	return custom.Success("")
 }

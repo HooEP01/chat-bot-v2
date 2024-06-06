@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/HooEP01/chat-bot-v2/database"
 	"github.com/HooEP01/chat-bot-v2/handle"
-	"github.com/HooEP01/chat-bot-v2/models"
 	"github.com/HooEP01/chat-bot-v2/pkg/websocket"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -72,11 +73,18 @@ func setupRoutes() {
 		})
 	})
 
+	defer func() {
+		if err := database.CloseDatabase(); err != nil {
+			log.Fatalf("Close database: %v", err)
+		}
+		log.Println("End Process")
+	}()
+
 	http.ListenAndServe(":8080", r)
 }
 
 func main() {
-	fmt.Println("Chat Bot App v0.0.2")
+	fmt.Println("Chat Bot App v0.1.0")
 
 	// set up env
 	err := godotenv.Load(".env")
@@ -85,8 +93,9 @@ func main() {
 	}
 
 	// set up database
-	models.SetupDatabase()
+	database.SetupDatabase()
 
 	// set up routes
 	setupRoutes()
+
 }
