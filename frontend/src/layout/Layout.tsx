@@ -1,31 +1,51 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import Loading from "../components/Loading";
 import { motion } from "framer-motion";
 import CustomToast from "../components/CustomToast";
+import CustomIcon from "../components/CustomIcon";
+import { IconMenu } from "@tabler/icons-react";
 
 const Layout = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const [sideDrawer, toggleSideDrawer] = useState(true);
+
+  const setSideDrawer = () => {
+    toggleSideDrawer((prev) => {
+      return !prev;
+    });
+  };
   return (
     <>
       <CustomToast />
 
       <div className="flex flex-row">
         {/* always open */}
-        <div className="drawer drawer-open">
-          <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+        <div className="drawer lg:drawer-open">
+          <input
+            id="my-drawer"
+            type="checkbox"
+            className="drawer-toggle"
+            checked={sideDrawer}
+            onChange={setSideDrawer}
+          />
 
           <div className="drawer-content bg-base-100">
             {/* Header */}
             <div className="navbar bg-base-200 w-full border">
               {/* <!-- Logo --> */}
-              <div className="flex-1">
-                <button className="btn btn-ghost text-xl">Chat Bot</button>
-              </div>
 
-              <div className="flex-none mr-4"></div>
+              <div className="flex justify-between w-full">
+                <div className="flex-1">
+                  <button className="btn btn-ghost text-xl">Chat Bot</button>
+                </div>
+
+                <label htmlFor="my-drawer" className="btn drawer-button lg:hidden">
+                  <CustomIcon icon={IconMenu} />
+                </label>
+              </div>
             </div>
 
             {/* main */}

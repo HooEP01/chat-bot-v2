@@ -29,7 +29,7 @@ const Faq = () => {
 
   return (
     <>
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col xl:flex-row gap-4">
         <div className="basis-1/4 card bg-base-200 border">
           <div className="card-body">
             <h2 className="card-title">Type</h2>
@@ -43,7 +43,7 @@ const Faq = () => {
                       className="flex justify-start items-center"
                     >
                       <button className="btn btn-outline w-full">
-                        <CustomIcon button={IconTag} />
+                        <CustomIcon icon={IconTag} />
                         <p className="text-start pl-4">{items.name ?? "-"}</p>
                       </button>
                     </div>
@@ -94,7 +94,7 @@ const Faq = () => {
                               onClick={() => removeFaq(item.id)}
                               className="btn btn-error"
                             >
-                              <CustomIcon button={IconTrash} />
+                              <CustomIcon icon={IconTrash} />
                             </button>
                           </div>
                         </td>
