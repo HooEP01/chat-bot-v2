@@ -83,9 +83,13 @@ const FaqModel = (props: FaqModelProps) => {
         onClick={toggleModal}
       >
         {type == FormType.Create ? (
-          <CustomIcon icon={IconPlus} stroke="2" />
+          <>
+            <CustomIcon icon={IconPlus} stroke="2" />
+          </>
         ) : (
-          <CustomIcon icon={IconEdit} />
+          <>
+            <CustomIcon icon={IconEdit} />
+          </>
         )}
       </button>
 

@@ -45,8 +45,8 @@ func SetupDatabase() (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to perform migrations: %v", err.Error())
 	}
 
-	dbInstance, _ := postgresDB.DB()
-	_ = dbInstance.Close()
+	// dbInstance, _ := postgresDB.DB()
+	// _ = dbInstance.Close()
 
 	return postgresDB, nil
 }
