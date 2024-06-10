@@ -1,14 +1,12 @@
-import { IconEdit, IconPlus } from "@tabler/icons-react";
-import CustomIcon from "./CustomIcon";
 import { FormType } from "../constant";
 import { FaqItem } from "../model/faq.model";
 import _ from "lodash";
-import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { FaqTypeItem } from "../model/faqType.model";
 import { createFaq, updateFaq } from "../store/faq/faqSlice";
+import { useState } from "react";
 
 interface FaqModelProps {
   type: FormType;
@@ -64,11 +62,12 @@ const FaqModel = (props: FaqModelProps) => {
     reset();
 
     // close modal
-    toggleModal();
+    toggleModel();
   };
 
-  const [showModal, setShowModel] = useState(false);
-  const toggleModal = () => {
+  const [showModel, setShowModel] = useState(true)
+
+  const toggleModel = () => {
     setShowModel((prev) => {
       return !prev;
     });
@@ -76,7 +75,7 @@ const FaqModel = (props: FaqModelProps) => {
 
   return (
     <>
-      <button
+      {/* <button
         className={`btn ${
           type == FormType.Create ? "btn-primary" : "btn-accent"
         }`}
@@ -91,9 +90,9 @@ const FaqModel = (props: FaqModelProps) => {
             <CustomIcon icon={IconEdit} />
           </>
         )}
-      </button>
+      </button> */}
 
-      <dialog className={`modal ${showModal ? "modal-open" : ""}`}>
+      <dialog className={`modal ${showModel ? "modal-open" : ""}`}>
         <div className="modal-box">
           <h3 className="font-bold text-lg">{_.upperFirst(type)} FAQ</h3>
           <div className="modal-action justify-start block">
@@ -171,7 +170,7 @@ const FaqModel = (props: FaqModelProps) => {
                 <button type="submit" className="btn btn-primary">
                   Submit
                 </button>
-                <button type="button" className="btn" onClick={toggleModal}>
+                <button type="button" className="btn" onClick={toggleModel}>
                   Close
                 </button>
               </div>
