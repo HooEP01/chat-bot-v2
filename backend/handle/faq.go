@@ -2,6 +2,7 @@ package handle
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -12,8 +13,18 @@ import (
 )
 
 func HandleFaqList(w http.ResponseWriter, r *http.Request) *custom.Response {
+	db := database.GetDB().Scopes(Paginate(r))
 	faqList := make([]models.Faq, 0)
-	database.GetDB().Scopes(Paginate(r)).Joins("FaqType").Find(&faqList)
+
+	typeParam := r.URL.Query().Get("type")
+	fmt.Println(typeParam)
+	if typeParam != "" {
+		db = db.Where("faq_type_id = ?", typeParam)
+	}
+
+	if err := db.Joins("FaqType").Find(&faqList).Error; err != nil {
+		return custom.Fail(err.Error(), http.StatusBadRequest)
+	}
 
 	return custom.Success(faqList, "FAQ List sync successfully!")
 }
@@ -37,7 +48,7 @@ func HandleFaqCreate(w http.ResponseWriter, r *http.Request) *custom.Response {
 		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}
 
-	return custom.Success(newFaq, "FAQ created successfully!")
+	return custom.Success(FindModel(int(newFaq.ID)), "FAQ created successfully!")
 }
 
 func HandleFaqUpdate(w http.ResponseWriter, r *http.Request) *custom.Response {
@@ -59,7 +70,7 @@ func HandleFaqUpdate(w http.ResponseWriter, r *http.Request) *custom.Response {
 		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}
 
-	return custom.Success(faq, "FAQ updated successfully!")
+	return custom.Success(FindModel(int(faq.ID)), "FAQ updated successfully!")
 }
 
 func HandleFaqDelete(w http.ResponseWriter, r *http.Request) *custom.Response {
@@ -72,4 +83,11 @@ func HandleFaqDelete(w http.ResponseWriter, r *http.Request) *custom.Response {
 	}
 
 	return custom.Success(idParam, "FAQ deleted successfully!")
+}
+
+func FindModel(id int) models.Faq {
+	faqItem := models.Faq{}
+	database.GetDB().Joins("FaqType").First(faqItem, id)
+
+	return faqItem
 }
