@@ -1,8 +1,11 @@
+import { FaqTypeItem } from "./faqType.model";
+
 export interface FaqItem {
     id: number,
     top_id?: number,
     parent_id?: number,
     faq_type_id?: number,
+    faq_type?: FaqTypeItem,
     question: string,
     answer: string,
 }

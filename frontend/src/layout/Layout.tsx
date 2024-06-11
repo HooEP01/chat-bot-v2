@@ -34,7 +34,7 @@ const Layout = () => {
 
           <div className="drawer-content bg-base-100">
             {/* Header */}
-            <div className="navbar bg-base-200 w-full border">
+            <div className="navbar w-full border">
               {/* <!-- Logo --> */}
 
               <div className="flex justify-between w-full">
