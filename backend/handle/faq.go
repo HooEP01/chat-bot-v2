@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/HooEP01/chat-bot-v2/database"
 	"github.com/HooEP01/chat-bot-v2/models"
 	"github.com/HooEP01/chat-bot-v2/utils/custom"
 	"github.com/go-chi/chi/v5"
@@ -12,7 +13,7 @@ import (
 
 func HandleFaqList(w http.ResponseWriter, r *http.Request) *custom.Response {
 	faqList := make([]models.Faq, 0)
-	models.GetDB().Scopes(Paginate(r)).Joins("FaqType").Find(&faqList)
+	database.GetDB().Scopes(Paginate(r)).Joins("FaqType").Find(&faqList)
 
 	return custom.Success(faqList, "FAQ List sync successfully!")
 }
@@ -20,7 +21,7 @@ func HandleFaqList(w http.ResponseWriter, r *http.Request) *custom.Response {
 func HandleFaqItem(w http.ResponseWriter, r *http.Request) *custom.Response {
 	idParam := chi.URLParam(r, "id")
 	faqItem := models.Faq{}
-	models.GetDB().Joins("FaqType").First(faqItem, idParam)
+	database.GetDB().Joins("FaqType").First(faqItem, idParam)
 
 	return custom.Success(faqItem, "FAQ Item sync successfully!")
 }
@@ -31,7 +32,7 @@ func HandleFaqCreate(w http.ResponseWriter, r *http.Request) *custom.Response {
 		return custom.Fail(err.Error(), http.StatusBadRequest)
 	}
 
-	result := models.GetDB().Create(&newFaq)
+	result := database.GetDB().Create(&newFaq)
 	if result.Error != nil {
 		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}
@@ -53,7 +54,7 @@ func HandleFaqUpdate(w http.ResponseWriter, r *http.Request) *custom.Response {
 		return custom.Fail(err.Error(), http.StatusBadRequest)
 	}
 
-	result := models.GetDB().Save(faq)
+	result := database.GetDB().Save(faq)
 	if result.Error != nil {
 		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}
@@ -65,7 +66,7 @@ func HandleFaqDelete(w http.ResponseWriter, r *http.Request) *custom.Response {
 	idParam := chi.URLParam(r, "id")
 
 	// TODO: soft delete
-	result := models.GetDB().Delete(&models.Faq{}, idParam)
+	result := database.GetDB().Delete(&models.Faq{}, idParam)
 	if result.Error != nil {
 		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}

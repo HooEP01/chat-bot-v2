@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -22,19 +21,19 @@ type Chat struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
 
-func (c Chat) AutoResponse() *custom.Response {
+// func (c Chat) AutoResponse() *custom.Response {
 
-	go func() {
-		result := GetDB().Create(&c)
-		if result.Error != nil {
-			fmt.Println(result.Error.Error())
-		}
-	}()
+// 	go func() {
+// 		result := database.GetDB().Create(&c)
+// 		if result.Error != nil {
+// 			fmt.Println(result.Error.Error())
+// 		}
+// 	}()
 
-	// Fuzzy search
+// 	// Fuzzy search
 
-	return c.SendChatGPT()
-}
+// 	return c.SendChatGPT()
+// }
 
 func (c Chat) SendChatGPT() *custom.Response {
 	apiKey := os.Getenv("OPEN_AI_API_KEY")

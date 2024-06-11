@@ -4,6 +4,10 @@ import "./App.css";
 
 import Layout from "./layout/Layout";
 import Loading from "./components/Loading";
+import AuthLayout from "./layout/AuthLayout";
+
+const Auth = lazy(() => import("./pages/auth"));
+const Landing = lazy(() => import("./pages/landing"));
 
 const Dashboard = lazy(() => import("./pages/dashboard"));
 const Faq = lazy(() => import("./pages/faq"));
@@ -15,11 +19,15 @@ function App() {
   return (
     <main>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/faq" element={<Faq />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/*" element={<Navigate to="/404" />} />
+        <Route path="/" element={<AuthLayout />}>
+          <Route path="" element={<Landing />} />
+          <Route path="auth" element={<Auth />} />
+        </Route>
+        <Route path="/*" element={<Layout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="faq" element={<Faq />} />
+          <Route path="chat" element={<Chat />} />
+          <Route path="*" element={<Navigate to="/404" />} />
         </Route>
         <Route
           path="/404"
