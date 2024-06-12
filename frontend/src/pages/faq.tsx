@@ -17,18 +17,27 @@ import CustomIcon from "../components/CustomIcon";
 import { FaqTypeItem } from "../model/faqType.model";
 import FaqTypeModel from "../components/FaqTypeModel";
 import { v4 as uuidv4 } from "uuid";
+import { SearchItem, useSearch } from "../hooks/search";
+import _ from "lodash";
 
 const Faq = () => {
-  const items = useSelector((state: RootState) => state.faq.items) as FaqItem[];
+  const items = useSelector(
+    (state: RootState) => state.faq?.items
+  ) as FaqItem[];
   const faqTypeItems = useSelector(
     (state: RootState) => state.faqType.items
   ) as FaqTypeItem[];
   const dispatch: AppDispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchFaq());
-    dispatch(fetchFaqType());
-  }, [dispatch]);
+  const searchFaq = async (params: SearchItem) => {
+    await dispatch(fetchFaq(params));
+  };
+
+  const { showSearch, setSearchItem } = useSearch(searchFaq);
+
+  const handleSearchItem = (key: string, value: number) => {
+    setSearchItem(key, String(value));
+  };
 
   const removeFaq = (id: number) => {
     dispatch(deleteFaq(id));
@@ -46,6 +55,11 @@ const Faq = () => {
     }
   };
 
+  useEffect(() => {
+    dispatch(fetchFaq({}));
+    dispatch(fetchFaqType());
+  }, [dispatch]);
+
   return (
     <>
       <div className="flex flex-col xl:flex-row gap-6">
@@ -59,9 +73,18 @@ const Faq = () => {
                       key={index}
                       className="flex justify-start items-center"
                     >
-                      <button className="btn btn-outline w-full">
+                      <button
+                        onClick={() => handleSearchItem("type", items.id)}
+                        className={`btn btn-outline w-full ${
+                          showSearch("type") == String(items.id)
+                            ? "btn-active"
+                            : ""
+                        }`}
+                      >
                         <CustomIcon icon={IconTag} />
-                        <p className="text-start pl-4">{items.name ?? "-"}</p>
+                        <p className="text-start pl-4">
+                          {_.upperFirst(items.name) ?? "-"}
+                        </p>
                       </button>
                     </div>
                   );
@@ -94,8 +117,8 @@ const Faq = () => {
               <table className="table">
                 <thead>
                   <tr className="border-0">
-                    <th className="pl-0">Type</th>
-                    <th>Question</th>
+                    <th className="pl-0 w-32">Type</th>
+                    <th className="w-80">Question</th>
                     <th className="w-80">Answer</th>
                     <th>Action</th>
                   </tr>
@@ -115,12 +138,12 @@ const Faq = () => {
                         </td>
                         <td className="text-left w-16">
                           <div className="flex">
-                            <div className="dropdown dropdown-bottom dropdown-end flex items-center btn btn-ghost">
-                              <div tabIndex={index}>
+                            <div className="dropdown dropdown-bottom dropdown-end flex items-center">
+                              <div tabIndex={item.id} className="btn btn-ghost">
                                 <CustomIcon icon={IconMenu} stroke={"2"} />
                               </div>
                               <ul
-                                tabIndex={index}
+                                tabIndex={item.id}
                                 className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
                               >
                                 <li>

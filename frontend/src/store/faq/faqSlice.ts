@@ -24,9 +24,11 @@ const initialState: FaqState = {
 
 export const fetchFaq = createAsyncThunk(
     "faq/fetchFaq",
-    async (_, thunkApi) => {
+    async (params: Record<string, string> = {}, thunkApi) => {
         try {
-            const response: AxiosResponse<FaqResponse> = await apiClient.get("/faq");
+            const response: AxiosResponse<FaqResponse> = await apiClient.get("/faq", {
+                params: params
+            });
 
             if (isSuccess(response.data)) {
                 // TODO: need improve
@@ -143,7 +145,7 @@ const faqSlice = createSlice({
                 state.status = StateStatus.Succeeded;
 
                 const faqIndex = findIndexById(state.items, _.toNumber(action.payload));
-                if (faqIndex !== -1) {   
+                if (faqIndex !== -1) {
                     state.items.splice(faqIndex, 1);
                 }
             })
