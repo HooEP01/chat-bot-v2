@@ -16,7 +16,7 @@ interface FaqModelProps {
 type FaqFormValues = {
   id?: number;
   top_id: number;
-  parent_id: number;
+  parent_id?: number | null;
   faq_type_id: number;
   answer: string;
   question: string;
@@ -41,7 +41,7 @@ const FaqModel = (props: FaqModelProps) => {
   } = useForm<FaqFormValues>({
     defaultValues: {
       top_id: _.get(faqItem, ["top_id"], 0),
-      parent_id: _.get(faqItem, ["parent_id"], 0),
+      parent_id: _.get(faqItem, ["parent_id"], null),
       faq_type_id: faqTypeId,
       answer: _.get(faqItem, ["answer"], ""),
       question: _.get(faqItem, ["question"], ""),
@@ -60,8 +60,6 @@ const FaqModel = (props: FaqModelProps) => {
 
     // reset form to default
     reset();
-
-    // close modal
     toggleModel();
   };
 
@@ -112,7 +110,7 @@ const FaqModel = (props: FaqModelProps) => {
                     min: 1,
                     valueAsNumber: true,
                   })}
-                  disabled={type === FormType.Edit}
+                  // disabled={type === FormType.Edit}
                   className="select select-bordered w-full"
                   defaultValue={faqTypeId}
                   required
@@ -162,7 +160,7 @@ const FaqModel = (props: FaqModelProps) => {
                   className="textarea textarea-bordered w-full"
                   {...register("answer", { required: true })}
                   placeholder="Answer"
-                  rows={1}
+                  rows={4}
                 ></textarea>
               </div>
 

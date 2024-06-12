@@ -7,13 +7,12 @@ import (
 )
 
 type Faq struct {
-	gorm.Model
+	// gorm.Model
 	ID        uint           `json:"id" gorm:"primarykey"`
-	TopID     uint           `json:"top_id"`
-	ParentID  uint           `json:"parent_id"`
-	ParentIDs string         `json:"parent_ids"`
+	ParentID  *uint          `json:"parent_id" gorm:"index; default:null"`
 	FaqTypeID uint           `json:"faq_type_id"`
 	FaqType   FaqType        `json:"faq_type" gorm:"references:ID"`
+	Faqs      []Faq          `json:"faqs" gorm:"foreignkey:ParentID;references:ID"`
 	Answer    string         `json:"answer"`
 	Question  string         `json:"question"`
 	CreatedAt time.Time      `json:"created_at" gorm:"autoCreateTime"`

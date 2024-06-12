@@ -16,5 +16,5 @@ export interface FaqForm {
     answer: string,
     question: string,
     top_id?: number,
-    parent_id?: number,
+    parent_id?: number | null,
 }

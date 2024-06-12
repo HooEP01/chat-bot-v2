@@ -2,7 +2,6 @@ package handle
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -17,12 +16,11 @@ func HandleFaqList(w http.ResponseWriter, r *http.Request) *custom.Response {
 	faqList := make([]models.Faq, 0)
 
 	typeParam := r.URL.Query().Get("type")
-	fmt.Println(typeParam)
 	if typeParam != "" {
 		db = db.Where("faq_type_id = ?", typeParam)
 	}
 
-	if err := db.Joins("FaqType").Find(&faqList).Error; err != nil {
+	if err := db.Preload("Faqs").Where("parent_id IS NULL").Joins("FaqType").Find(&faqList).Error; err != nil {
 		return custom.Fail(err.Error(), http.StatusBadRequest)
 	}
 
@@ -87,7 +85,7 @@ func HandleFaqDelete(w http.ResponseWriter, r *http.Request) *custom.Response {
 
 func FindModel(id int) models.Faq {
 	faqItem := models.Faq{}
-	database.GetDB().Joins("FaqType").First(faqItem, id)
+	database.GetDB().Joins("FaqType").First(&faqItem, id)
 
 	return faqItem
 }
