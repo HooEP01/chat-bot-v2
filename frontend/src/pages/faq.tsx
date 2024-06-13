@@ -51,7 +51,7 @@ const Faq = () => {
     if (type == FormType.Create) {
       setModel(<FaqModel key={key} type={FormType.Create} />);
     } else {
-      setModel(<FaqModel key={key} type={FormType.Edit} faqItem={item} />);
+      setModel(<FaqModel key={key} type={FormType.Edit} faqId={item?.id} />);
     }
   };
 

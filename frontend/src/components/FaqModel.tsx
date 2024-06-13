@@ -1,5 +1,4 @@
 import { FormType } from "../constant";
-import { FaqItem } from "../model/faq.model";
 import _ from "lodash";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,15 +6,19 @@ import { AppDispatch, RootState } from "../store";
 import { FaqTypeItem } from "../model/faqType.model";
 import { createFaq, updateFaq } from "../store/faq/faqSlice";
 import { useState } from "react";
+import CustomIcon from "./CustomIcon";
+import { IconSubtask } from "@tabler/icons-react";
+import SubFaq from "./SubFaq";
+import { v4 as uuidv4 } from "uuid";
+import { getFaqItem } from "../selectors/faq";
 
 interface FaqModelProps {
   type: FormType;
-  faqItem?: FaqItem;
+  faqId?: number;
 }
 
 type FaqFormValues = {
   id?: number;
-  top_id: number;
   parent_id?: number | null;
   faq_type_id: number;
   answer: string;
@@ -23,9 +26,10 @@ type FaqFormValues = {
 };
 
 const FaqModel = (props: FaqModelProps) => {
-  const { type, faqItem } = props;
+  const { type, faqId = 0 } = props;
 
   const dispatch: AppDispatch = useDispatch();
+  const faqItem = useSelector(getFaqItem(faqId));
 
   const faqTypeItems = useSelector(
     (state: RootState) => state.faqType.items
@@ -40,7 +44,6 @@ const FaqModel = (props: FaqModelProps) => {
     formState: { errors },
   } = useForm<FaqFormValues>({
     defaultValues: {
-      top_id: _.get(faqItem, ["top_id"], 0),
       parent_id: _.get(faqItem, ["parent_id"], null),
       faq_type_id: faqTypeId,
       answer: _.get(faqItem, ["answer"], ""),
@@ -63,7 +66,7 @@ const FaqModel = (props: FaqModelProps) => {
     toggleModel();
   };
 
-  const [showModel, setShowModel] = useState(true)
+  const [showModel, setShowModel] = useState(true);
 
   const toggleModel = () => {
     setShowModel((prev) => {
@@ -71,33 +74,35 @@ const FaqModel = (props: FaqModelProps) => {
     });
   };
 
+  const subFaq = _.get(faqItem, ["faqs"], []);
+  const [showSubTask, setSubTask] = useState(!!(subFaq?.length > 0));
+  const toggleSubTask = () => {
+    setSubTask((prev) => {
+      return !prev;
+    });
+  };
+
   return (
     <>
-      {/* <button
-        className={`btn ${
-          type == FormType.Create ? "btn-primary" : "btn-accent"
-        }`}
-        onClick={toggleModal}
-      >
-        {type == FormType.Create ? (
-          <>
-            <CustomIcon icon={IconPlus} stroke="2" />
-          </>
-        ) : (
-          <>
-            <CustomIcon icon={IconEdit} />
-          </>
-        )}
-      </button> */}
-
       <dialog className={`modal ${showModel ? "modal-open" : ""}`}>
         <div className="modal-box">
           <h3 className="font-bold text-lg">{_.upperFirst(type)} FAQ</h3>
           <div className="modal-action justify-start block">
+            <div className="mb-4">
+              <button
+                className="btn btn-outline btn-accent"
+                onClick={toggleSubTask}
+              >
+                <CustomIcon icon={IconSubtask} />
+                Sub Faq
+              </button>
+            </div>
+
             <form
               onSubmit={handleSubmit(onSubmit)}
               method="dialog"
-              className="space-y-4"
+              className="space-y-4 ml-0"
+              style={{ marginLeft: 0 }}
             >
               {/* type field */}
               <div className="flex flex-col gap-2">
@@ -142,13 +147,6 @@ const FaqModel = (props: FaqModelProps) => {
                   placeholder="Question"
                   rows={1}
                 ></textarea>
-                {/* <label className="input input-bordered flex items-center gap-2">
-                  <input
-                    {...register("question", { required: true })}
-                    type="text"
-                    className="grow"
-                  />
-                </label> */}
               </div>
 
               {/* <!-- answer field --> */}
@@ -173,6 +171,24 @@ const FaqModel = (props: FaqModelProps) => {
                 </button>
               </div>
             </form>
+
+            <div hidden={!showSubTask}>
+              <div className="divider divider-start"></div>
+              <p className="font-semibold text-base mb-2">Sub FAQ</p>
+
+              {subFaq?.length > 0 ? (
+                <>
+                  {faqItem?.faqs?.map((item, index) => {
+                    return (
+                      <SubFaq key={index} parent={faqItem} faqItem={item} />
+                    );
+                  })}
+                  <SubFaq key={uuidv4()} parent={faqItem} />
+                </>
+              ) : (
+                <SubFaq key={uuidv4()} parent={faqItem} />
+              )}
+            </div>
           </div>
         </div>
       </dialog>

@@ -117,6 +117,14 @@ const faqSlice = createSlice({
             })
             .addCase(createFaq.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
+
+                const faqItem = state.items.find(item => item.id === action.payload.parent_id);
+                if (faqItem) {
+                    faqItem.faqs = faqItem.faqs ?? [];
+                    faqItem.faqs = [...faqItem.faqs, action.payload];
+                    return;
+                }
+
                 state.items = [...state.items, action.payload];
             })
             .addCase(createFaq.rejected, (state, action) => {
@@ -128,6 +136,13 @@ const faqSlice = createSlice({
             })
             .addCase(updateFaq.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
+
+                const faqItem = state.items.find(item => item.id === action.payload.parent_id);
+                if (faqItem) {
+                    faqItem.faqs = faqItem.faqs ?? [];
+                    faqItem.faqs = [...faqItem.faqs, action.payload];
+                    return;
+                }
 
                 const faqIndex = findIndexById(state.items, action.payload.id);
                 if (faqIndex !== -1) {
