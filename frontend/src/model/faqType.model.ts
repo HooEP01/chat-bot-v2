@@ -9,3 +9,9 @@ export interface FaqTypeForm {
     name: string,
     description?: string,
 }
+
+export const DefaultFaqType: FaqTypeItem = {
+    id: 0,
+    name: "all",
+    description: "this is default"
+}

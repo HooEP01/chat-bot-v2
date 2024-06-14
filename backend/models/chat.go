@@ -12,7 +12,7 @@ import (
 )
 
 type Chat struct {
-	gorm.Model
+	// gorm.Model
 	ID        uint           `json:"id" gorm:"primarykey"`
 	UserID    string         `json:"user_id"`
 	Question  string         `json:"question"`

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { State, StateStatus } from "../../model/state.model";
-import { FaqTypeForm, FaqTypeItem } from "../../model/faqType.model";
+import { DefaultFaqType, FaqTypeForm, FaqTypeItem } from "../../model/faqType.model";
 import { AxiosError, AxiosResponse } from "axios";
 import apiClient from "../../utils/http";
 import { Response, isSuccess } from "../../model/http.model";
@@ -30,7 +30,6 @@ export const fetchFaqType = createAsyncThunk(
     async (_, thunkApi) => {
         try {
             const response: AxiosResponse<FaqTypeResponse> = await apiClient.get("/faq-type");
-
             if (isSuccess(response.data)) {
                 // TODO: need improve
                 return thunkApi.fulfillWithValue(response.data.data);
@@ -114,7 +113,7 @@ const faqSlice = createSlice({
             })
             .addCase(fetchFaqType.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
-                state.items = [...action.payload as FaqTypeItem[]];
+                state.items = [DefaultFaqType as FaqTypeItem, ...action.payload as FaqTypeItem[]];
             })
             .addCase(fetchFaqType.rejected, (state, action) => {
                 state.status = StateStatus.Failed;

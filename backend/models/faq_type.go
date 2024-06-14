@@ -7,7 +7,7 @@ import (
 )
 
 type FaqType struct {
-	gorm.Model
+	// gorm.Model
 	ID          uint           `json:"id" gorm:"primarykey"`
 	Name        string         `json:"name"`
 	Description string         `json:"description"`

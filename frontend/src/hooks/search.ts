@@ -1,36 +1,62 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type SearchFunc = {
-    (arr: SearchItem[]): Promise<void>
+    (arr: SearchItem): Promise<void>
 }
 
-type SearchItem = {
-    key: string,
-    value: string
+export type SearchItem = {
+    [key: string]: string;
 }
 
-export const useSearch = async (func: SearchFunc) => {
-    const [search, setSearch] = useState([] as SearchItem[]);
+export const useSearch = (func: SearchFunc) => {
+    const [search, setSearch] = useState<SearchItem>({});
+    const searchRef = useRef(search);
 
-    const setSearchItem = (item: SearchItem) => {
-        setSearch((prev) => {
-            return [...prev, item]
+    useEffect(() => {
+        searchRef.current = search
+    }, [search])
+
+    const showSearch = (key: string) => {
+        if (search[key]) {
+            return search[key];
+        }
+
+        return "0"
+    }
+
+    const setSearchItem = async (key: string, value: string) => {
+        setSearch(prev => {
+            return {
+                ...prev,
+                [key]: value
+            };
         });
+
+        if (parseInt(value) == 0) {
+            removeSearchItem(key)
+        }
+
+        setTimeout(async () => {
+            await searchResult();
+        }, 100)
+    };
+
+    const searchResult = async () => {
+        await func(searchRef.current);
     }
 
     const removeSearchItem = (key: string) => {
-        const newSeachItem = search.filter(item => item.key !== key);
-        setSearch(newSeachItem);
-    }
+        setSearch(prev => {
+            const newData = { ...prev };
+            delete newData[key];
+            return newData;
+        });
+    };
 
-    const searchResult = async () => {
-        return await func(search);
-    }
 
-    return [
-        search,
+    return {
+        showSearch,
         setSearchItem,
-        removeSearchItem,
         searchResult
-    ]
+    };
 } 

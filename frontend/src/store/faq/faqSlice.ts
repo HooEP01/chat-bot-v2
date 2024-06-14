@@ -24,9 +24,11 @@ const initialState: FaqState = {
 
 export const fetchFaq = createAsyncThunk(
     "faq/fetchFaq",
-    async (_, thunkApi) => {
+    async (params: Record<string, string> = {}, thunkApi) => {
         try {
-            const response: AxiosResponse<FaqResponse> = await apiClient.get("/faq");
+            const response: AxiosResponse<FaqResponse> = await apiClient.get("/faq", {
+                params: params
+            });
 
             if (isSuccess(response.data)) {
                 // TODO: need improve
@@ -115,6 +117,14 @@ const faqSlice = createSlice({
             })
             .addCase(createFaq.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
+
+                const faqItem = state.items.find(item => item.id === action.payload.parent_id);
+                if (faqItem) {
+                    faqItem.faqs = faqItem.faqs ?? [];
+                    faqItem.faqs = [...faqItem.faqs, action.payload];
+                    return;
+                }
+
                 state.items = [...state.items, action.payload];
             })
             .addCase(createFaq.rejected, (state, action) => {
@@ -126,6 +136,13 @@ const faqSlice = createSlice({
             })
             .addCase(updateFaq.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
+
+                const faqItem = state.items.find(item => item.id === action.payload.parent_id);
+                if (faqItem) {
+                    faqItem.faqs = faqItem.faqs ?? [];
+                    faqItem.faqs = [...faqItem.faqs, action.payload];
+                    return;
+                }
 
                 const faqIndex = findIndexById(state.items, action.payload.id);
                 if (faqIndex !== -1) {
@@ -142,8 +159,16 @@ const faqSlice = createSlice({
             .addCase(deleteFaq.fulfilled, (state, action) => {
                 state.status = StateStatus.Succeeded;
 
+                const faqItem = state.items.find(item => item.id === action.payload.parent_id);
+                console.log(faqItem)
+                if (faqItem && faqItem.faqs) {
+                    const faqToDeleteIndex = faqItem.faqs.findIndex(faq => faq.id === action.payload.id);
+                    faqItem.faqs.splice(faqToDeleteIndex, 1);
+                    return;
+                }
+
                 const faqIndex = findIndexById(state.items, _.toNumber(action.payload));
-                if (faqIndex !== -1) {   
+                if (faqIndex !== -1) {
                     state.items.splice(faqIndex, 1);
                 }
             })

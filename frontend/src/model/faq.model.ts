@@ -6,6 +6,7 @@ export interface FaqItem {
     parent_id?: number,
     faq_type_id?: number,
     faq_type?: FaqTypeItem,
+    faqs?: FaqItem[],
     question: string,
     answer: string,
 }
@@ -16,5 +17,5 @@ export interface FaqForm {
     answer: string,
     question: string,
     top_id?: number,
-    parent_id?: number,
+    parent_id?: number | null,
 }
