@@ -74,13 +74,20 @@ func HandleFaqUpdate(w http.ResponseWriter, r *http.Request) *custom.Response {
 func HandleFaqDelete(w http.ResponseWriter, r *http.Request) *custom.Response {
 	idParam := chi.URLParam(r, "id")
 
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		return custom.Fail(err.Error(), http.StatusBadRequest)
+	}
+
+	model := FindModel(id)
+
 	// TODO: soft delete
 	result := database.GetDB().Delete(&models.Faq{}, idParam)
 	if result.Error != nil {
 		return custom.Fail(result.Error.Error(), http.StatusBadRequest)
 	}
 
-	return custom.Success(idParam, "FAQ deleted successfully!")
+	return custom.Success(model, "FAQ deleted successfully!")
 }
 
 func FindModel(id int) models.Faq {

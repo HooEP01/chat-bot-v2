@@ -1,7 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { FaqItem } from "../model/faq.model";
 import _ from "lodash";
-import { createFaq, updateFaq } from "../store/faq/faqSlice";
+import { createFaq, deleteFaq, updateFaq } from "../store/faq/faqSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
 
@@ -39,8 +39,13 @@ const SubFaq = (props: SubFaqProps) => {
     } else {
       dispatch(updateFaq(data));
     }
-  
+
     reset();
+  };
+
+  const onDelete = (faqId: number | undefined) => {
+    if (faqId == undefined) return;
+    dispatch(deleteFaq(faqId));
   };
 
   return (
@@ -78,7 +83,11 @@ const SubFaq = (props: SubFaqProps) => {
           <button type="submit" className="btn btn-primary">
             Create
           </button>
-          <button type="button" className="btn btn-outline btn-accent">
+          <button
+            onClick={() => onDelete(faqItem?.id)}
+            type="button"
+            className="btn btn-outline btn-error"
+          >
             Cancel
           </button>
         </div>
