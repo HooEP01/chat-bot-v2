@@ -33,8 +33,9 @@ const Layout = () => {
           />
 
           <div className="drawer-content bg-base-100">
-            {/* Header */}
-            <div className="navbar w-full border">
+
+             {/* Header */}
+             <div className="navbar w-full border md:hidden">
               {/* <!-- Logo --> */}
 
               <div className="flex justify-between w-full">
@@ -47,7 +48,6 @@ const Layout = () => {
                 </label>
               </div>
             </div>
-
             {/* main */}
             <div className="content-wrapper transition-all duration-150 p-6">
               {/* md:min-h-screen will h-full*/}
@@ -98,11 +98,10 @@ const Layout = () => {
 
             <div className="menu p-4 w-64 min-h-full bg-base-200 text-base-content">
               <ul className="menu bg-base-200 w-56 rounded-box">
-                <li>
-                  <Link to="/" className={currentPath === "/" ? "active" : ""}>
-                    Dashboard
-                  </Link>
+                <li className="mb-4">
+                  <button className="btn btn-ghost text-xl">Chat Bot</button>
                 </li>
+
                 <li>
                   <Link
                     to="/faq"

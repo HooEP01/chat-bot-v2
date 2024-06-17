@@ -53,7 +53,6 @@ export const useSearch = (func: SearchFunc) => {
         });
     };
 
-
     return {
         showSearch,
         setSearchItem,

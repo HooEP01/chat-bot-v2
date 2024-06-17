@@ -1,9 +1,9 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { FaqItem } from "../model/faq.model";
 import _ from "lodash";
-import { createFaq, deleteFaq, updateFaq } from "../store/faq/faqSlice";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store";
+import { FaqItem } from "../../model/faq.model";
+import { AppDispatch } from "../../store";
+import { createFaq, deleteFaq, updateFaq } from "../../store/faq/faqSlice";
 
 interface SubFaqProps {
   faqItem?: FaqItem;
@@ -57,9 +57,6 @@ const SubFaq = (props: SubFaqProps) => {
       >
         {/* question field */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="question" className="text-sm font-medium">
-            Question
-          </label>
           <textarea
             className="textarea textarea-bordered w-full"
             {...register("question", { required: true })}
@@ -67,11 +64,9 @@ const SubFaq = (props: SubFaqProps) => {
             rows={1}
           ></textarea>
         </div>
+
         {/* <!-- answer field --> */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="answer" className="text-sm font-medium">
-            Answer
-          </label>
           <textarea
             className="textarea textarea-bordered w-full"
             {...register("answer", { required: true })}
@@ -79,6 +74,7 @@ const SubFaq = (props: SubFaqProps) => {
             rows={2}
           ></textarea>
         </div>
+
         <div className="flex justify-between gap-2">
           <button type="submit" className="btn btn-primary">
             Create

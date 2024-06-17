@@ -160,14 +160,14 @@ const faqSlice = createSlice({
                 state.status = StateStatus.Succeeded;
 
                 const faqItem = state.items.find(item => item.id === action.payload.parent_id);
-                console.log(faqItem)
+               
                 if (faqItem && faqItem.faqs) {
                     const faqToDeleteIndex = faqItem.faqs.findIndex(faq => faq.id === action.payload.id);
                     faqItem.faqs.splice(faqToDeleteIndex, 1);
                     return;
                 }
 
-                const faqIndex = findIndexById(state.items, _.toNumber(action.payload));
+                const faqIndex = findIndexById(state.items, _.toNumber(action.payload.id));
                 if (faqIndex !== -1) {
                     state.items.splice(faqIndex, 1);
                 }

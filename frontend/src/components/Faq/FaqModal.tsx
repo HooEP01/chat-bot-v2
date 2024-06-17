@@ -1,16 +1,17 @@
-import { FormType } from "../constant";
+import { FormType } from "../../constant";
 import _ from "lodash";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store";
-import { FaqTypeItem } from "../model/faqType.model";
-import { createFaq, updateFaq } from "../store/faq/faqSlice";
+import { AppDispatch, RootState } from "../../store";
+import { FaqTypeItem } from "../../model/faqType.model";
+import { createFaq, updateFaq } from "../../store/faq/faqSlice";
 import { useState } from "react";
-import CustomIcon from "./CustomIcon";
+import CustomIcon from "../CustomIcon";
 import { IconSubtask, IconX } from "@tabler/icons-react";
 import SubFaq from "./SubFaq";
 import { v4 as uuidv4 } from "uuid";
-import { getFaqItem } from "../selectors/faq";
+import { getFaqItem } from "../../selectors/faq";
+import { useModal } from "../../hooks/modal";
 
 interface FaqModelProps {
   type: FormType;
@@ -25,7 +26,7 @@ type FaqFormValues = {
   question: string;
 };
 
-const FaqModel = (props: FaqModelProps) => {
+const FaqModal = (props: FaqModelProps) => {
   const { type, faqId = 0 } = props;
 
   const dispatch: AppDispatch = useDispatch();
@@ -51,9 +52,9 @@ const FaqModel = (props: FaqModelProps) => {
     },
   });
 
-  const onSubmit: SubmitHandler<FaqFormValues> = (data) => {
-    console.log(data);
+  const { showModal, toggleModal } = useModal(true);
 
+  const onSubmit: SubmitHandler<FaqFormValues> = (data) => {
     if (type == FormType.Create) {
       dispatch(createFaq(data));
     } else {
@@ -61,17 +62,8 @@ const FaqModel = (props: FaqModelProps) => {
       dispatch(updateFaq(data));
     }
 
-    // reset form to default
     reset();
-    toggleModel();
-  };
-
-  const [showModel, setShowModel] = useState(true);
-
-  const toggleModel = () => {
-    setShowModel((prev) => {
-      return !prev;
-    });
+    toggleModal();
   };
 
   const subFaq = _.get(faqItem, ["faqs"], []);
@@ -84,13 +76,12 @@ const FaqModel = (props: FaqModelProps) => {
 
   return (
     <>
-      <dialog className={`modal ${showModel ? "modal-open" : ""}`}>
-        <div className="modal-box w-11/12 max-w-5xl p-0">
-
+      <dialog className={`modal ${showModal ? "modal-open" : ""}`}>
+        <div className="modal-box w-11/12 max-w-2xl p-0">
           <div className="flex justify-between items-center p-6">
             <h3 className="font-bold text-lg">{_.upperFirst(type)} FAQ</h3>
-            <button className="btn btn-ghost btn-md" onClick={toggleModel}>
-              <CustomIcon icon={IconX} size={20}/>
+            <button className="btn btn-ghost btn-md" onClick={toggleModal}>
+              <CustomIcon icon={IconX} size={20} />
             </button>
           </div>
 
@@ -98,7 +89,7 @@ const FaqModel = (props: FaqModelProps) => {
             <div className="modal-action justify-start block mt-0">
               <div className="mb-4">
                 <button
-                  className="btn btn-outline btn-accent"
+                  className="btn btn-outline btn-primary w-44"
                   onClick={toggleSubTask}
                 >
                   <CustomIcon icon={IconSubtask} />
@@ -171,11 +162,8 @@ const FaqModel = (props: FaqModelProps) => {
                 </div>
 
                 <div className="flex justify-between">
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn btn-primary md:w-52">
                     Submit
-                  </button>
-                  <button type="button" className="btn" onClick={toggleModel}>
-                    Close
                   </button>
                 </div>
               </form>
@@ -207,4 +195,4 @@ const FaqModel = (props: FaqModelProps) => {
   );
 };
 
-export default FaqModel;
+export default FaqModal;

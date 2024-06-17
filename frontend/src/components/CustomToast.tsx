@@ -3,7 +3,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export const CustomToastNotify = (success: boolean, message: string) => {
   if (success) {
-    toast.success(`🦄 ${message}`, {
+    toast.success(`${message}`, {
       position: "top-right",
       autoClose: 1500,
       hideProgressBar: false,
@@ -15,7 +15,7 @@ export const CustomToastNotify = (success: boolean, message: string) => {
       transition: Bounce,
     });
   } else {
-    toast.error(`🦄 ${message}`, {
+    toast.error(`${message}`, {
       position: "top-right",
       autoClose: 3000,
       hideProgressBar: false,
