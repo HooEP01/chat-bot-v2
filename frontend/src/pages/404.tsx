@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-
 import ErrorImage from "../assets/404.svg";
+
 function Error() {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center text-center py-20 dark:bg-slate-900">
