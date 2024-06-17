@@ -11,15 +11,14 @@ const Auth = () => {
 
   const { register, handleSubmit, reset } = useForm<AuthFormValues>({
     defaultValues: {
-      username: "",
-      password: "",
+      username: "admin",
+      password: "123456",
     },
   });
 
   const onSubmit: SubmitHandler<AuthFormValues> = (data) => {
     console.log(data);
     navigate("/faq");
-
     reset();
   };
 
@@ -27,13 +26,13 @@ const Auth = () => {
     <>
       <div className="card m-6 md:w-96 bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title">Welcome to CHATBOT</h2>
-          <p className="text-start">
-            Enter your username and pass below to login to your account
+          <h2 className="card-title">Welcome to Chat Bot v2</h2>
+          <p className="text-start mb-3">
+           One of the best, best of the best chat bot in the world.
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               {/* username field */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="username" className="text-sm font-medium">
@@ -61,12 +60,12 @@ const Auth = () => {
                   />
                 </label>
               </div>
-            </div>
 
-            <div className="card-actions w-full mt-2">
-              <button type="submit" className="btn btn-primary btn-block">
-                LOGIN
-              </button>
+              <div className="card-actions w-full mt-2">
+                <button type="submit" className="btn btn-primary btn-block">
+                  LOGIN
+                </button>
+              </div>
             </div>
           </form>
         </div>

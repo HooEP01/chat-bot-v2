@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store";
-import { FaqTypeItem } from "../model/faqType.model";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { createFaqType, deleteFaqType } from "../store/faqType/faqTypeSlice";
-import { useState } from "react";
-import CustomIcon from "./CustomIcon";
+import CustomIcon from "../CustomIcon";
 import { IconEdit, IconTag, IconTrash } from "@tabler/icons-react";
-import _ from "lodash";
+import { AppDispatch, RootState } from "../../store";
+import { FaqTypeItem } from "../../model/faqType.model";
+import { createFaqType } from "../../store/faqType/faqTypeSlice";
+import { useModal } from "../../hooks/modal";
+import { useButton } from "../../hooks/button";
 
 type FaqTypeFormValues = {
   id?: number;
@@ -14,12 +14,15 @@ type FaqTypeFormValues = {
   description?: string;
 };
 
-const FaqTypeModel = () => {
+const FaqTypeModal = () => {
   const dispatch: AppDispatch = useDispatch();
 
   const faqTypeItems = useSelector(
     (state: RootState) => state.faqType.items
   ) as FaqTypeItem[];
+
+  const { showModal, toggleModal } = useModal();
+  const { selectedButton, setSelectedButton, onDelete } = useButton();
 
   const { register, handleSubmit, reset } = useForm<FaqTypeFormValues>({
     defaultValues: {
@@ -31,47 +34,14 @@ const FaqTypeModel = () => {
 
   const onSubmit: SubmitHandler<FaqTypeFormValues> = (data) => {
     dispatch(createFaqType(data));
-
-    // reset form to default
     reset();
-  };
-
-  // TODO: if edit link to onSubmit
-  const onDelete = () => {
-    if (selectedButton != null) {
-      const exist = _.some(faqTypeItems, { id: parseInt(selectedButton) });
-
-      if (exist) {
-        dispatch(deleteFaqType(parseInt(selectedButton)));
-      }
-      return;
-    }
-  };
-
-  const [showModal, setShowModel] = useState(false);
-  const toggleModal = () => {
-    setShowModel((prev) => {
-      return !prev;
-    });
-  };
-
-  const [selectedButton, setButton] = useState<string | undefined>();
-  const setSelectedButton = (e: React.MouseEvent<HTMLElement>) => {
-    const key = (e.currentTarget as HTMLInputElement).value;
-
-    setButton((prev) => {
-      if (prev == key) {
-        return;
-      }
-      return key;
-    });
   };
 
   return (
     <>
       {/* Button */}
       <button
-        className="btn btn-primary w-full justify-start"
+        className="btn btn-primary btn-outline w-full justify-start"
         onClick={toggleModal}
       >
         <CustomIcon icon={IconEdit} />
@@ -103,19 +73,6 @@ const FaqTypeModel = () => {
                 </label>
               </div>
 
-              {/* description field */}
-              {/* <div className="flex flex-col gap-2">
-                <label htmlFor="description" className="text-sm font-medium">
-                  Description
-                </label>
-                <textarea
-                  className="textarea textarea-bordered w-full"
-                  {...register("description", { required: true })}
-                  placeholder="Description"
-                  rows={1}
-                ></textarea>
-              </div> */}
-
               <div className="flex flex-col gap-3 mt-4">
                 {/* Item list */}
                 {faqTypeItems.map((item, index) => {
@@ -131,12 +88,15 @@ const FaqTypeModel = () => {
                           setSelectedButton(e)
                         }
                         value={item.id}
-                        className={`btn btn-outline w-full ${
+                        className={`flex justify-between btn btn-outline w-full ${
                           selectedButton == String(item.id) ? "btn-active" : ""
                         }`}
                       >
-                        <CustomIcon icon={IconTag} />
-                        <p className="text-start pl-4">{item.name ?? "-"}</p>
+                        <div className="flex items-center">
+                          <CustomIcon icon={IconTag} />
+                          <p className="text-start pl-4">{item.name ?? "-"}</p>
+                        </div>
+
                         <CustomIcon icon={IconTrash} />
                       </button>
                     </div>
@@ -146,7 +106,11 @@ const FaqTypeModel = () => {
 
               <div className="flex justify-between">
                 {selectedButton != null ? (
-                  <button onClick={onDelete} type="button" className="btn btn-error">
+                  <button
+                    onClick={() => onDelete(faqTypeItems)}
+                    type="button"
+                    className="btn btn-error"
+                  >
                     Delete
                   </button>
                 ) : (
@@ -167,4 +131,4 @@ const FaqTypeModel = () => {
   );
 };
 
-export default FaqTypeModel;
+export default FaqTypeModal;
