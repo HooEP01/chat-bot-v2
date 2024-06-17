@@ -13,7 +13,8 @@ import CustomIcon from "../CustomIcon";
 import FaqModal from "./FaqModal";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
-import { ReactElement, useState } from "react";
+import { ReactNode, useState } from "react";
+import CustomDialog from "../CustomDialog";
 
 const FaqList = () => {
   const items = useSelector(
@@ -22,7 +23,7 @@ const FaqList = () => {
 
   const dispatch: AppDispatch = useDispatch();
 
-  const [elementModal, setElementModal] = useState<ReactElement>();
+  const [elementModal, setElementModal] = useState<ReactNode>();
 
   const handleModal = (type: FormType, item?: FaqItem) => {
     const key = uuidv4();
@@ -40,6 +41,12 @@ const FaqList = () => {
     dispatch(deleteFaq(id));
   };
 
+  const itemDialog = (id: number) => {
+    setElementModal(
+      <CustomDialog func={removeFaq} id={id} />
+    );
+  };
+
   return (
     <div className="card border w-full">
       <div className="card-body">
@@ -49,7 +56,9 @@ const FaqList = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="card-title">FAQs List</h2>
           <button
-            className={"flex justify-start items-center btn btn-primary md:w-44"}
+            className={
+              "flex justify-start items-center btn btn-primary md:w-44"
+            }
             onClick={() => handleModal(FormType.Create)}
           >
             <CustomIcon icon={IconPlus} stroke="2" size="20" />
@@ -114,7 +123,7 @@ const FaqList = () => {
                             </li>
                             <li>
                               <button
-                                onClick={() => removeFaq(item.id)}
+                                onClick={() => itemDialog(item.id)}
                                 className="flex justify-start btn btn-outline btn-error"
                               >
                                 <CustomIcon icon={IconTrash} />
