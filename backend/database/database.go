@@ -40,7 +40,7 @@ func SetupDatabase() (*gorm.DB, error) {
 	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable TimeZone=Asia/Kuala_Lumpur"
 	postgresDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	err = postgresDB.AutoMigrate(&models.FaqType{}, &models.Faq{}, &models.Chat{})
+	err = postgresDB.AutoMigrate(&models.FaqType{}, &models.Faq{}, &models.Chat{}, &models.User{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to perform migrations: %v", err.Error())
 	}
