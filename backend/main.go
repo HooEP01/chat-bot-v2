@@ -46,8 +46,11 @@ func setupRoutes() {
 	go pool.Start()
 
 	// ws
-	r.Get("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(pool, w, r)
+	r.Route("/ws", func(r chi.Router) {
+		r.Use(Authenticate)
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			serveWs(pool, w, r)
+		})
 	})
 
 	// chat api
@@ -130,8 +133,8 @@ func Authenticate(next http.Handler) http.Handler {
 		}
 
 		// Retrieve user data from database
-		userItem := models.User{}
-		result := database.GetDB().First(&userItem, "id = ?", subjectInt)
+		userItem := &models.User{}
+		result := database.GetDB().First(userItem, "id = ?", subjectInt)
 
 		if result.Error != nil {
 			log.Printf("Failed to get user data: %v", result.Error)
