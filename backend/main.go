@@ -48,7 +48,8 @@ func setupRoutes() {
 	// ws
 	r.Route("/ws", func(r chi.Router) {
 		r.Use(Authenticate)
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		r.Get("/", handle.Make(handle.HandleChatStart))
+		r.Get("/serve", func(w http.ResponseWriter, r *http.Request) {
 			serveWs(pool, w, r)
 		})
 	})
@@ -56,7 +57,7 @@ func setupRoutes() {
 	// chat api
 	r.Route("/chat", func(r chi.Router) {
 		r.Use(Authenticate)
-		r.Post("/", handle.Make(handle.HandleChatCreate))
+		// r.Post("/", handle.Make(handle.HandleChatCreate))
 	})
 
 	// faq api
