@@ -31,3 +31,18 @@ func HandleChatStart(w http.ResponseWriter, r *http.Request) *custom.Response {
 
 	return custom.Success(nil, "Chat started successfully!")
 }
+
+func HandleChatCreate(w http.ResponseWriter, r *http.Request) *custom.Response {
+	user, response := User(r, w)
+	if response != nil {
+		return response
+	}
+
+	pool := websocket.GetPool(user.ID)
+	client := pool.GetClient(user.ID)
+	if client == nil {
+		return custom.Fail("Client does not exist.", http.StatusInternalServerError)
+	}
+
+	return custom.Success(nil, "Chat created successfully!")
+}

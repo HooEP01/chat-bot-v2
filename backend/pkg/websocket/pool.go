@@ -62,3 +62,13 @@ func (pool *Pool) Start() {
 		}
 	}
 }
+
+func (c *Pool) GetClient(userID uint) *Client {
+	for client, _ := range c.Clients {
+		if client.ID == userID {
+			return client
+		}
+	}
+
+	return nil
+}

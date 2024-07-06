@@ -20,7 +20,6 @@ import (
 )
 
 func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
-	fmt.Println("WebSocket Endpoint Hit")
 	conn, err := websocket.Upgrade(w, r)
 	if err != nil {
 		fmt.Fprintf(w, "%+v\n", err)
@@ -36,37 +35,40 @@ func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 }
 
 func setupRoutes() {
-
 	r := chi.NewRouter()
 
-	// cors for local
+	// CORS
+	// for development purpose, allow all origin
 	r.Use(cors.AllowAll().Handler)
 
-	pool := websocket.NewPool()
-	go pool.Start()
+	// Auth api
+	// Allow user to login, register, and logout
+	r.Route("/auth", func(r chi.Router) {
+		r.Post("/login", handle.Make(handle.HandleAuthLogin))
+		r.Post("/register", handle.Make(handle.HandleAuthRegister))
+		r.Post("/logout", handle.Make(handle.HandleAuthLogout))
+	})
 
-	// ws
+	// Chat websocket api
+	// allow websocket connection and boardcast message with user id and channel id
 	r.Route("/ws", func(r chi.Router) {
 		r.Use(Authenticate)
-		r.Get("/", handle.Make(handle.HandleChatStart))
-		r.Get("/serve", func(w http.ResponseWriter, r *http.Request) {
-			serveWs(pool, w, r)
-		})
+		r.Get("/", handle.Make(handle.HandleConnections))
 	})
 
-	// chat api
+	// Chat api
+	// Allow user to send message to bot
 	r.Route("/chat", func(r chi.Router) {
 		r.Use(Authenticate)
-		// r.Post("/", handle.Make(handle.HandleChatCreate))
 	})
 
-	// faq api
+	// FAQ api
+	// Allow admin to get, create, update, and delete FAQ
 	r.Route("/faq", func(r chi.Router) {
 		r.Use(Authenticate)
 		r.Get("/", handle.Make(handle.HandleFaqList))
 		r.Post("/", handle.Make(handle.HandleFaqCreate))
 
-		// Subrouters:
 		r.Route("/{id}", func(r chi.Router) {
 			r.Get("/", handle.Make(handle.HandleFaqItem))
 			r.Put("/", handle.Make(handle.HandleFaqUpdate))
@@ -74,24 +76,20 @@ func setupRoutes() {
 		})
 	})
 
-	// faq type api
+	// FAQ Type api
+	// Allow admin to get, create, and delete FAQ Type
 	r.Route("/faq-type", func(r chi.Router) {
 		r.Use(Authenticate)
 		r.Get("/", handle.Make(handle.HandleFaqTypeList))
 		r.Post("/", handle.Make(handle.HandleFaqTypeCreate))
 
-		// Subrouters:
 		r.Route("/{id}", func(r chi.Router) {
 			r.Delete("/", handle.Make(handle.HandleFaqTypeDelete))
 		})
 	})
 
-	r.Route("/auth", func(r chi.Router) {
-		r.Post("/login", handle.Make(handle.HandleAuthLogin))
-		r.Post("/register", handle.Make(handle.HandleAuthRegister))
-		r.Post("/logout", handle.Make(handle.HandleAuthLogout))
-	})
-
+	// Close database connection when the process is done
+	// and log the end of the process
 	defer func() {
 		if err := database.CloseDatabase(); err != nil {
 			log.Fatalf("Close database: %v", err)
@@ -99,6 +97,7 @@ func setupRoutes() {
 		log.Println("End Process")
 	}()
 
+	// Start the server
 	http.ListenAndServe(":8080", r)
 }
 
@@ -163,6 +162,8 @@ func main() {
 
 	// set up database
 	database.SetupDatabase()
+
+	models.AutoMigrate()
 
 	// set up routes
 	setupRoutes()

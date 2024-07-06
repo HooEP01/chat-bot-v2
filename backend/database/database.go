@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/HooEP01/chat-bot-v2/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -36,21 +35,6 @@ func GetDB() *gorm.DB {
 	return postgresInstance
 }
 
-func SetupDatabase() (*gorm.DB, error) {
-	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable TimeZone=Asia/Kuala_Lumpur"
-	postgresDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-	err = postgresDB.AutoMigrate(&models.FaqType{}, &models.Faq{}, &models.Chat{}, &models.User{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to perform migrations: %v", err.Error())
-	}
-
-	// dbInstance, _ := postgresDB.DB()
-	// _ = dbInstance.Close()
-
-	return postgresDB, nil
-}
-
 func CloseDatabase() error {
 	if postgresClose != nil {
 		if err := postgresClose(); err != nil {
@@ -60,4 +44,17 @@ func CloseDatabase() error {
 	}
 
 	return fmt.Errorf("database not exist.")
+}
+
+func SetupDatabase() (*gorm.DB, error) {
+	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable TimeZone=Asia/Kuala_Lumpur"
+	postgresDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %v", err.Error())
+	}
+
+	// dbInstance, _ := postgresDB.DB()
+	// _ = dbInstance.Close()
+
+	return postgresDB, nil
 }

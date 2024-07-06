@@ -19,7 +19,6 @@ type User struct {
 	FirstName string    `gorm:"size:100;not null"`
 	LastName  string    `gorm:"size:100;not null"`
 	BirthDate time.Time `gorm:"type:date"`
-	IsActive  bool      `gorm:"default:true"`
 }
 
 // GenerateSalt creates a new random salt.
