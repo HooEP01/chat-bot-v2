@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/HooEP01/chat-bot-v2/models"
 	"github.com/HooEP01/chat-bot-v2/utils/custom"
 	"gorm.io/gorm"
 )
@@ -29,6 +30,15 @@ func Make(h HTTPHandler) http.HandlerFunc {
 
 		}
 	}
+}
+
+func User(r *http.Request, w http.ResponseWriter) (*models.User, *custom.Response) {
+	user, ok := r.Context().Value("user").(*models.User)
+	if !ok {
+		return nil, custom.Fail("Unauthorized", http.StatusUnauthorized)
+	}
+
+	return user, nil
 }
 
 func Paginate(r *http.Request) func(db *gorm.DB) *gorm.DB {

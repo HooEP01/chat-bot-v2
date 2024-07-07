@@ -1,6 +1,10 @@
 package websocket
 
-import "fmt"
+import (
+	"fmt"
+)
+
+var pools = make(map[uint]*Pool)
 
 type Pool struct {
 	Register   chan *Client
@@ -16,6 +20,17 @@ func NewPool() *Pool {
 		Clients:    make(map[*Client]bool),
 		Broadcast:  make(chan Message),
 	}
+}
+
+func GetPool(channelID uint) *Pool {
+	if pool, exists := pools[channelID]; exists {
+		return pool
+	}
+
+	newPool := NewPool()
+	go newPool.Start()
+	pools[channelID] = newPool
+	return newPool
 }
 
 func (pool *Pool) Start() {
@@ -46,4 +61,14 @@ func (pool *Pool) Start() {
 			}
 		}
 	}
+}
+
+func (c *Pool) GetClient(userID uint) *Client {
+	for client, _ := range c.Clients {
+		if client.ID == userID {
+			return client
+		}
+	}
+
+	return nil
 }

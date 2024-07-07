@@ -1,5 +1,4 @@
-import { Icon } from "@tabler/icons-react";
-import _ from "lodash";
+import { Icon, IconGhost } from "@tabler/icons-react";
 
 interface CustomIconProps {
   icon: Icon;
@@ -9,14 +8,11 @@ interface CustomIconProps {
 }
 
 const CustomIcon = (props: CustomIconProps) => {
-  const IconButton = props.icon;
-  const iconSize = _.get(props, ["size"], "24");
-  const iconStroke = _.get(props, ["stroke"], "1");
-  const iconColor = _.get(props, ["color"], undefined)
+  const { icon: Icon = IconGhost, size = "24", stroke = "1", color } = props;
 
   return (
     <>
-      <IconButton size={iconSize} stroke={iconStroke} color={iconColor} />
+      <Icon size={size} stroke={stroke} color={color} />
     </>
   );
 };

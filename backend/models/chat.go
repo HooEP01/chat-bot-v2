@@ -4,21 +4,15 @@ import (
 	"context"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/HooEP01/chat-bot-v2/utils/custom"
 	"github.com/sashabaranov/go-openai"
-	"gorm.io/gorm"
 )
 
 type Chat struct {
-	// gorm.Model
-	ID        uint           `json:"id" gorm:"primarykey"`
-	UserID    string         `json:"user_id"`
-	Question  string         `json:"question"`
-	CreatedAt time.Time      `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
-	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	Model
+	UserID   string `json:"user_id"`
+	Question string `json:"question"`
 }
 
 // func (c Chat) AutoResponse() *custom.Response {
