@@ -56,4 +56,6 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) *custom.Response 
 
 		channel.Broadcast(formattedMessage, false)
 	}
+
+	return nil
 }

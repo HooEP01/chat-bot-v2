@@ -53,7 +53,7 @@ func setupRoutes() {
 	// allow websocket connection and boardcast message with user id and channel id
 	r.Route("/ws", func(r chi.Router) {
 		r.Use(Authenticate)
-		r.Get("/", handle.Make(handle.HandleConnections))
+		r.HandleFunc("/", handle.Make(handle.HandleConnections))
 	})
 
 	// Chat api
