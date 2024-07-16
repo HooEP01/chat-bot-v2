@@ -1,5 +1,5 @@
-import { Suspense, useState } from "react";
-import { Link, useLocation, Outlet } from "react-router-dom";
+import { Suspense, useEffect, useState } from "react";
+import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
 import { motion } from "framer-motion";
 import CustomToast from "../components/CustomToast";
@@ -11,10 +11,16 @@ import {
   IconUser,
   IconZoomQuestion,
 } from "@tabler/icons-react";
+import { useHttpError } from "../hooks/http-error";
+import { useSelector } from "react-redux";
+import { getIsAuth, getToken } from "../selectors/auth";
 
 const Layout = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const isAuth = useSelector(getIsAuth());
+  const token = useSelector(getToken());
+  const navigate = useNavigate();
 
   const [sideDrawer, toggleSideDrawer] = useState(true);
 
@@ -23,6 +29,15 @@ const Layout = () => {
       return !prev;
     });
   };
+
+  useEffect(() => {
+    if (!isAuth || !token) {
+      navigate("/");
+    }
+  }, [isAuth, token, navigate]);
+
+  useHttpError();
+
   return (
     <>
       <CustomToast />
@@ -61,7 +76,6 @@ const Layout = () => {
               {/* md:min-h-screen will h-full*/}
               <div className="page-content page-min-height">
                 <div className="container max-w-screen-lg mx-auto">
-
                   <div className="flex h-28 w-full justify-end items-center gap-4 px-4 md:px-8">
                     <button className="btn btn-circle">
                       <CustomIcon icon={IconBell} />

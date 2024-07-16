@@ -4,7 +4,6 @@ import { FaqItem } from "../../model/faq.model";
 import { deleteFaq } from "../../store/faq/faqSlice";
 import { FormType } from "../../constant";
 import {
-  IconDotsVertical,
   IconEdit,
   IconPlus,
   IconTrash,
@@ -42,9 +41,7 @@ const FaqList = () => {
   };
 
   const itemDialog = (id: number) => {
-    setElementModal(
-      <CustomDialog func={removeFaq} id={id} />
-    );
+    setElementModal(<CustomDialog func={removeFaq} id={id} />);
   };
 
   return (
@@ -57,12 +54,11 @@ const FaqList = () => {
           <h2 className="card-title">FAQs List</h2>
           <button
             className={
-              "flex justify-start items-center btn btn-primary md:w-44"
+              "btn btn-primary btn-circle"
             }
             onClick={() => handleModal(FormType.Create)}
           >
             <CustomIcon icon={IconPlus} stroke="2" size="20" />
-            <span className="ml-2">Add FAQ</span>
           </button>
         </div>
 
@@ -95,43 +91,20 @@ const FaqList = () => {
                       <p className="line-clamp-1">{item.faqs?.length ?? "0"}</p>
                     </td>
                     <td className="pr-0 text-right">
-                      <div className="flex justify-end">
-                        <div
-                          className={`flex items-center dropdown ${
-                            (items.length % 10) - 3 < index
-                              ? "dropdown-top dropdown-end"
-                              : "dropdown-bottom dropdown-end"
-                          }`}
+                      <div className="flex justify-end gap-2">
+                        <button
+                          className={"btn btn-outline btn-circle btn-neutral"}
+                          onClick={() => handleModal(FormType.Edit, item)}
                         >
-                          <div tabIndex={item.id} className="btn btn-ghost">
-                            <CustomIcon icon={IconDotsVertical} stroke={"2"} />
-                          </div>
-                          <ul
-                            tabIndex={item.id}
-                            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-                          >
-                            <li>
-                              <button
-                                className={
-                                  "flex justify-start btn btn-outline btn-neutral"
-                                }
-                                onClick={() => handleModal(FormType.Edit, item)}
-                              >
-                                <CustomIcon icon={IconEdit} />
-                                <span className="ml-4">Edit</span>
-                              </button>
-                            </li>
-                            <li>
-                              <button
-                                onClick={() => itemDialog(item.id)}
-                                className="flex justify-start btn btn-outline btn-error"
-                              >
-                                <CustomIcon icon={IconTrash} />
-                                <span className="ml-4">Delete</span>
-                              </button>
-                            </li>
-                          </ul>
-                        </div>
+                          <CustomIcon icon={IconEdit} />
+                        </button>
+
+                        <button
+                          onClick={() => itemDialog(item.id)}
+                          className="btn btn-outline btn-circle btn-error"
+                        >
+                          <CustomIcon icon={IconTrash} />
+                        </button>
                       </div>
                     </td>
                   </tr>

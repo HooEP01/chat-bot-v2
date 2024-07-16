@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../store/auth/authSlice";
 import { LoginForm } from "../../model/user.model";
 import { useNavigate } from "react-router-dom";
-import { getStatus, getToken } from "../../selectors/auth";
+import { getIsAuth, getStatus, getToken } from "../../selectors/auth";
 import { StateStatus } from "../../model/state.model";
 import { useEffect } from "react";
 
@@ -13,6 +13,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const token = useSelector(getToken());
   const status = useSelector(getStatus());
+  const isAuth = useSelector(getIsAuth());
 
   const { register, handleSubmit, reset } = useForm<LoginForm>({
     defaultValues: {
@@ -27,10 +28,10 @@ const Auth = () => {
   };
 
   useEffect(() => {
-    if (token && status === StateStatus.Succeeded) {
+    if (token && isAuth && status === StateStatus.Succeeded) {
       navigate("/faq");
     }
-  }, [token, status, navigate]);
+  }, [token, status, isAuth, navigate]);
 
   return (
     <div className="max-w-[24rem] mx-auto">
@@ -39,7 +40,7 @@ const Auth = () => {
           <p className="card-title block text-2xl text-center">Welcome back.</p>
           <p className="text-center mb-4">
             New to us? {""}
-            <a className="underline font-semibold" href="/register">
+            <a className="underline font-semibold" href="/">
               Sign Up
             </a>
           </p>
@@ -83,7 +84,7 @@ const Auth = () => {
           </form>
 
           <p className="mb-4">
-            <a className="underline font-semibold" href="/faq">
+            <a className="underline font-semibold" href="/">
               Trouble logging in?
             </a>
           </p>

@@ -9,13 +9,15 @@ import { CustomToastNotify } from "../../components/CustomToast";
 interface AuthState extends State {
     item: User,
     token: string,
+    isAuth: boolean,
 }
 
 const initialState: AuthState = {
     status: StateStatus.Idle,
     item: {} as User,
     error: "",
-    token: ""
+    token: "",
+    isAuth: false,
 }
 
 export const login = createAsyncThunk(
@@ -55,7 +57,6 @@ export const register = createAsyncThunk(
     }
 )
 
-// TODO: need implement logout
 export const logout = createAsyncThunk(
     "auth/logout",
     async (_, thunkApi) => {
@@ -96,8 +97,23 @@ const authSlice = createSlice({
 
                 state.token = token;
                 state.item = user;
+                state.isAuth = true;
             })
             .addCase(login.rejected, (state, action) => {
+                state.status = StateStatus.Failed;
+                state.error = action.error.message ?? "unknown error!";
+                state.isAuth = false;
+            })
+            .addCase(logout.pending, (state) => {
+                state.status = StateStatus.Loading;
+            })
+            .addCase(logout.fulfilled, (state) => {
+                state.status = StateStatus.Succeeded;
+                state.token = "";
+                state.item = {} as User;
+                state.isAuth = false;
+            })
+            .addCase(logout.rejected, (state, action) => {
                 state.status = StateStatus.Failed;
                 state.error = action.error.message ?? "unknown error!";
             })

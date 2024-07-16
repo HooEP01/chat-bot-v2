@@ -18,4 +18,14 @@ apiClient.interceptors.request.use((config) => {
     return Promise.reject(error);
 });
 
+apiClient.interceptors.response.use((response) => {
+    return response;
+}, (error) => {
+    if (error.response?.status === 401) {
+        window.dispatchEvent(new CustomEvent("unauthorized"));
+    }
+
+    return Promise.reject(error);
+});
+
 export default apiClient;

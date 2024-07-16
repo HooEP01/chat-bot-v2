@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { FaqTypeItem } from "../../model/faqType.model";
 import FaqTypeModal from "./FaqTypeModal";
-import { v4 as uuidv4 } from "uuid";
 import FaqTypeShow from "./FaqTypeShow";
 import { SearchItem, useSearch } from "../../hooks/search";
 import { fetchFaq } from "../../store/faq/faqSlice";
@@ -31,11 +30,11 @@ const FaqTypeList = () => {
   return (
     <>
       <div className="flex flex-col gap-3 my-4 md:w-80">
-        {faqTypeItems.map((items) => {
+        {faqTypeItems.map((item) => {
           return (
             <FaqTypeShow
-              key={uuidv4()}
-              faqTypeId={items.id}
+              key={item.id}
+              faqTypeId={item.id}
               showSearch={showSearch}
               handleSearchItem={handleSearchItem}
             />
