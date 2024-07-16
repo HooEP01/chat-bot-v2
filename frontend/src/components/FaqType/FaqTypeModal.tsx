@@ -4,7 +4,7 @@ import CustomIcon from "../CustomIcon";
 import { IconEdit, IconTag, IconTrash } from "@tabler/icons-react";
 import { AppDispatch, RootState } from "../../store";
 import { FaqTypeItem } from "../../model/faqType.model";
-import { createFaqType } from "../../store/faqType/faqTypeSlice";
+import { createFaqType, deleteFaqType } from "../../store/faqType/faqTypeSlice";
 import { useModal } from "../../hooks/modal";
 import { useButton } from "../../hooks/button";
 
@@ -22,7 +22,8 @@ const FaqTypeModal = () => {
   ) as FaqTypeItem[];
 
   const { showModal, toggleModal } = useModal();
-  const { selectedButton, setSelectedButton, onDelete } = useButton();
+  const { selectedButton, setSelectedButton, setButton, onDelete } =
+    useButton();
 
   const { register, handleSubmit, reset } = useForm<FaqTypeFormValues>({
     defaultValues: {
@@ -35,6 +36,15 @@ const FaqTypeModal = () => {
   const onSubmit: SubmitHandler<FaqTypeFormValues> = (data) => {
     dispatch(createFaqType(data));
     reset();
+  };
+
+  const onDeleteFayType = (selectedButton: string) => {
+    dispatch(deleteFaqType(parseInt(selectedButton))).then((response) => {
+      if (deleteFaqType.fulfilled.match(response)) {
+        // console.log(response);
+        setButton(undefined);
+      }
+    });
   };
 
   return (
@@ -107,7 +117,7 @@ const FaqTypeModal = () => {
               <div className="flex justify-between">
                 {selectedButton != null ? (
                   <button
-                    onClick={() => onDelete(faqTypeItems)}
+                    onClick={() => onDelete(faqTypeItems, onDeleteFayType)}
                     type="button"
                     className="btn btn-error"
                   >

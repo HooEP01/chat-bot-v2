@@ -12,8 +12,10 @@ import {
   IconZoomQuestion,
 } from "@tabler/icons-react";
 import { useHttpError } from "../hooks/http-error";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getIsAuth, getToken } from "../selectors/auth";
+import { AppDispatch } from "../store";
+import { logout } from "../store/auth/authSlice";
 
 const Layout = () => {
   const location = useLocation();
@@ -23,6 +25,7 @@ const Layout = () => {
   const navigate = useNavigate();
 
   const [sideDrawer, toggleSideDrawer] = useState(true);
+  const dispatch: AppDispatch = useDispatch();
 
   const setSideDrawer = () => {
     toggleSideDrawer((prev) => {
@@ -38,6 +41,11 @@ const Layout = () => {
 
   useHttpError();
 
+  const logoutAccount = () => {
+    dispatch(logout()).then(() => {
+      navigate("/");
+    }); 
+  };
   return (
     <>
       <CustomToast />
@@ -80,9 +88,24 @@ const Layout = () => {
                     <button className="btn btn-circle">
                       <CustomIcon icon={IconBell} />
                     </button>
-                    <button className="btn btn-circle">
-                      <CustomIcon icon={IconUser} />
-                    </button>
+
+                    <div className="dropdown dropdown-end">
+                      <div
+                        tabIndex={0}
+                        role="button"
+                        className="btn btn-circle"
+                      >
+                        <CustomIcon icon={IconUser} />
+                      </div>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 mt-2 shadow"
+                      >
+                        <li onClick={logoutAccount}>
+                          <a>Logout</a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
 
                   <div className="p-4 md:p-8">

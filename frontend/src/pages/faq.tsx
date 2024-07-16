@@ -1,41 +1,26 @@
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store";
-import { fetchFaq } from "../store/faq/faqSlice";
-import { useEffect } from "react";
-import { fetchFaqType } from "../store/faqType/faqTypeSlice";
-import FaqTypeList from "../components/FaqType/FaqTypeList";
-import FaqList from "../components/Faq/FaqList";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import Faq from "../components/Faq/Faq";
+import FaqSkeleton from "../components/Faq/FaqSkeleton";
+import FaqError from "../components/Faq/FaqError";
 
-const Faq = () => {
-  const dispatch: AppDispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchFaq({}));
-    dispatch(fetchFaqType());
-  }, [dispatch]);
+const FaqPage = () => {
+  
 
   return (
     <>
-      {/* Breadcrumbs */}
-      <div className="text-sm breadcrumbs">
-        <ul>
-          <li>
-            <a>Home</a>
-          </li>
-          <li>FAQs</li>
-        </ul>
-      </div>
-
-      {/* Title */}
-      <p className="text-2xl font-semibold mb-4">Frequently Asked Questions</p>
-
-      <div className="flex flex-col xl:flex-row gap-6">
-        <FaqTypeList />
-
-        <FaqList />
-      </div>
+    <ErrorBoundary
+        fallback={<FaqError />}
+        onReset={(details) => {
+          console.log(details);
+        }}
+      >
+        <Suspense fallback={<FaqSkeleton />}>
+          <Faq />
+        </Suspense>
+      </ErrorBoundary>
     </>
   );
 };
 
-export default Faq;
+export default FaqPage;
