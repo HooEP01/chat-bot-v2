@@ -5,20 +5,36 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 // User defines a user model for GORM to map with the database.
 type User struct {
-	gorm.Model
-	Username  string    `gorm:"uniqueIndex;not null"`
-	Email     string    `gorm:"uniqueIndex;not null"`
-	Password  string    `gorm:"not null"`
-	Salt      string    `gorm:"not null"`
-	FirstName string    `gorm:"size:100;not null"`
-	LastName  string    `gorm:"size:100;not null"`
-	BirthDate time.Time `gorm:"type:date"`
+	Model
+	Username  string    `json:"username" gorm:"uniqueIndex;not null"`
+	Email     string    `json:"email" gorm:"uniqueIndex;not null"`
+	Password  string    `json:"password" gorm:"not null"`
+	Salt      string    `json:"salt" gorm:"not null"`
+	FirstName string    `json:"first_name" gorm:"size:100;not null"`
+	LastName  string    `json:"last_name" gorm:"size:100;not null"`
+	BirthDate time.Time `json:"birth_date" gorm:"type:date"`
+}
+
+type UserResponse struct {
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	BirthDate time.Time `json:"birth_date"`
+}
+
+func (u *User) Fields() UserResponse {
+	return UserResponse{
+		Username:  u.Username,
+		Email:     u.Email,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		BirthDate: u.BirthDate,
+	}
 }
 
 // GenerateSalt creates a new random salt.

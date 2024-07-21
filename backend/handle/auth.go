@@ -108,8 +108,13 @@ func HandleAuthLogin(w http.ResponseWriter, r *http.Request) *custom.Response {
 		return custom.Fail("Failed to generate access token", http.StatusInternalServerError)
 	}
 
+	response := map[string]interface{}{
+		"token": accessToken,
+		"user":  user.Fields(),
+	}
+
 	// If login is successful
-	return custom.Success(accessToken, "Login successful")
+	return custom.Success(response, "Login successful")
 }
 
 func HandleAuthLogout(w http.ResponseWriter, r *http.Request) *custom.Response {
