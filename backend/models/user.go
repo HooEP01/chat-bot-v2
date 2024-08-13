@@ -17,6 +17,7 @@ type User struct {
 	FirstName string    `json:"first_name" gorm:"size:100;not null"`
 	LastName  string    `json:"last_name" gorm:"size:100;not null"`
 	BirthDate time.Time `json:"birth_date" gorm:"type:date"`
+	Token     string    `json:"token" gorm:"not null"`
 }
 
 type UserResponse struct {
@@ -35,6 +36,18 @@ func (u *User) Fields() UserResponse {
 		LastName:  u.LastName,
 		BirthDate: u.BirthDate,
 	}
+}
+
+func BeforeSave(u *User) (err error) {
+	if u.Token == "" {
+		token, err := GenerateSalt(32)
+		if err != nil {
+			return err
+		}
+		u.Token = token
+	}
+
+	return
 }
 
 // GenerateSalt creates a new random salt.

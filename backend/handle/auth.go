@@ -124,10 +124,12 @@ func HandleAuthLogout(w http.ResponseWriter, r *http.Request) *custom.Response {
 }
 
 func GenerateAccessToken(user *models.User) (string, error) {
+
 	key := []byte(configs.ReadConfigs().JWTConfigs.Secret)
 	claims := &jwt.RegisteredClaims{
 		Subject:   strconv.Itoa(int(user.ID)),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+		ID:        user.Token,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

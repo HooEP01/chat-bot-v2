@@ -119,7 +119,7 @@ func Authenticate(next http.Handler) http.Handler {
 		}
 
 		claims, ok := token.Claims.(*jwt.RegisteredClaims)
-		if !ok || claims.Subject == "" { // Check if claims could be parsed and ID is not empty
+		if !ok || claims.Subject == "" || claims.ID == "" { // Check if claims could be parsed and ID is not empty
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -132,9 +132,14 @@ func Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
+		jtiStr := claims.ID
+
 		// Retrieve user data from database
-		userItem := &models.User{}
-		result := database.GetDB().First(userItem, "id = ?", subjectInt)
+		userItem := &models.User{
+			Model: models.Model{ID: uint(subjectInt)},
+			Token: jtiStr,
+		}
+		result := database.GetDB().First(userItem)
 
 		if result.Error != nil {
 			log.Printf("Failed to get user data: %v", result.Error)
@@ -143,7 +148,9 @@ func Authenticate(next http.Handler) http.Handler {
 		}
 
 		// Proceed with the next handler if everything is fine
-		ctx := context.WithValue(r.Context(), "user", userItem)
+		type contextKey string
+		const userKey contextKey = "user"
+		ctx := context.WithValue(r.Context(), userKey, userItem)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
